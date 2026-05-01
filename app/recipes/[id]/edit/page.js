@@ -79,7 +79,7 @@ export default function EditRecipe({ params }) {
         <p className="text-sm text-gray-500 mb-4">編集するにはパスワードが必要です</p>
         <form onSubmit={handleVerify} className="space-y-4">
           <input
-            type="password"
+            type="text"
             value={password}
             onChange={e => setPassword(e.target.value)}
             className="w-full border rounded-lg px-3 py-2 text-sm"
