@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { doc, getDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, increment, deleteDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import CommentSection from '../../../components/CommentSection'
 
@@ -11,6 +11,7 @@ export default function RecipeDetail({ params }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleting, setDeleting] = useState(false)
+  const [arranges, setArranges] = useState([])
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -21,6 +22,14 @@ export default function RecipeDetail({ params }) {
       setLoading(false)
     }
     fetchRecipe()
+  }, [params.id])
+
+  useEffect(() => {
+    const q = query(collection(db, 'recipes'), where('originId', '==', params.id))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setArranges(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+    })
+    return () => unsubscribe()
   }, [params.id])
 
   const handleLike = async () => {
@@ -48,112 +57,123 @@ export default function RecipeDetail({ params }) {
     }
   }
 
-  if (loading) return <p className="text-gray-400 text-sm">読み込み中...</p>
-  if (!recipe) return <p className="text-gray-400 text-sm">レシピが見つかりません</p>
+  if (loading) return <p style={{ color: '#9A7060', fontSize: '14px' }}>読み込み中...</p>
+  if (!recipe) return <p style={{ color: '#9A7060', fontSize: '14px' }}>レシピが見つかりません</p>
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      {recipe.imageUrl && (
-        <img
-          src={recipe.imageUrl}
-          alt={recipe.title}
-          className="w-full h-64 object-cover rounded-lg mb-6"
-        />
+    <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '24px' }}>
+      {recipe.originId && (
+        <div style={{ backgroundColor: '#FFF0E6', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '8px 14px', marginBottom: '16px', fontSize: '13px' }}>
+          元レシピ：
+          <a href={'/recipes/' + recipe.originId} style={{ color: '#C07048', fontWeight: '500', textDecoration: 'none' }}>
+            {recipe.originTitle}
+          </a>
+        </div>
       )}
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">
+
+      {recipe.imageUrl && (
+        <img src={recipe.imageUrl} alt={recipe.title}
+          style={{ width: '100%', height: '260px', objectFit: 'cover', borderRadius: '12px', marginBottom: '20px' }} />
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <span style={{ backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '11px', padding: '3px 12px', borderRadius: '20px', fontWeight: '500' }}>
           {recipe.category}
         </span>
-        <span className="text-xs text-gray-400">{recipe.cookTime}分</span>
+        <span style={{ fontSize: '12px', color: '#B09080' }}>{recipe.cookTime}分</span>
       </div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">{recipe.title}</h1>
-      <p className="text-gray-600 text-sm mb-6">{recipe.description}</p>
 
-      <div className="mb-6">
-        <h2 className="font-bold text-gray-700 mb-2">材料</h2>
-        <ul className="space-y-1">
+      <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#3D2314', marginBottom: '8px' }}>{recipe.title}</h1>
+      <p style={{ fontSize: '14px', color: '#9A7060', lineHeight: '1.7', marginBottom: '24px' }}>{recipe.description}</p>
+
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '10px' }}>材料</h2>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
           {recipe.ingredients?.map((item, i) => (
-            <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-              <span className="text-orange-400">・</span>{item}
+            <li key={i} style={{ fontSize: '14px', color: '#5C3D2E', padding: '6px 0', borderBottom: '1px solid #F5EDE6', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: '#E8A87C', fontWeight: '600' }}>・</span>{item}
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="mb-6">
-        <h2 className="font-bold text-gray-700 mb-2">手順</h2>
-        <ol className="space-y-2">
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '10px' }}>手順</h2>
+        <ol style={{ listStyle: 'none', padding: 0 }}>
           {recipe.steps?.map((step, i) => (
-            <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-              <span className="bg-orange-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i + 1}</span>
+            <li key={i} style={{ fontSize: '14px', color: '#5C3D2E', padding: '8px 0', borderBottom: '1px solid #F5EDE6', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <span style={{ backgroundColor: '#E8A87C', color: '#fff', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0, fontWeight: '600' }}>{i + 1}</span>
               {step}
             </li>
           ))}
         </ol>
       </div>
 
-      <button
-        onClick={handleLike}
-        disabled={liked}
-        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition ${
-          liked
-            ? 'bg-pink-100 text-pink-500 cursor-default'
-            : 'bg-gray-100 text-gray-600 hover:bg-pink-100 hover:text-pink-500'
-        }`}
-      >
-        ❤ {liked ? 'ありがとう！' : '好き！'} {recipe.likes || 0}
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <button onClick={handleLike} disabled={liked}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', border: 'none', cursor: liked ? 'default' : 'pointer', backgroundColor: liked ? '#FFE4E4' : '#F5EDE6', color: liked ? '#E07070' : '#9A7060', fontSize: '14px', fontWeight: '500' }}>
+          ❤ {liked ? 'ありがとう！' : '好き！'} {recipe.likes || 0}
+        </button>
+        <a href={'/recipes/new?originId=' + params.id}
+          style={{ display: 'inline-block', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '14px', fontWeight: '500', textDecoration: 'none', border: '1px solid #F0E6DC' }}>
+          アレンジする
+        </a>
+      </div>
 
       <CommentSection recipeId={params.id} />
 
-      <div className="mt-8 flex gap-3">
-        
+      {arranges.length > 0 && (
+        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #F0E6DC' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '12px' }}>このレシピのアレンジ</h3>
+          <div>
+            {arranges.map(a => (
+              <a key={a.id} href={'/recipes/' + a.id}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', backgroundColor: '#FFF8F4', borderRadius: '10px', border: '1px solid #F0E6DC', marginBottom: '8px', textDecoration: 'none' }}>
+                {a.imageUrl && (
+                  <img src={a.imageUrl} alt={a.title} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                )}
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#3D2314', marginBottom: '2px' }}>{a.title}</p>
+                  <p style={{ fontSize: '12px', color: '#B09080' }}>❤ {a.likes || 0}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: '24px', display: 'flex', gap: '10px' }}>
         <a href={'/recipes/' + params.id + '/edit'}
-          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200"
-        >
+          style={{ backgroundColor: '#F5EDE6', color: '#5C3D2E', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
           編集
         </a>
-        <button
-          onClick={() => setShowDeleteModal(true)}
-          className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-200"
-        >
+        <button onClick={() => setShowDeleteModal(true)}
+          style={{ backgroundColor: '#FDECEA', color: '#C0392B', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', border: 'none', cursor: 'pointer' }}>
           削除
         </button>
       </div>
 
-      <div className="mt-8">
-        <a href="/" className="text-orange-500 hover:text-orange-600 text-sm font-bold">
-          &larr; 一覧に戻る
+      <div style={{ marginTop: '24px' }}>
+        <a href="/" style={{ color: '#C07048', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
+          ← 一覧に戻る
         </a>
       </div>
 
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-80">
-            <h3 className="font-bold text-gray-800 mb-4">レシピを削除しますか？</h3>
-            <p className="text-sm text-gray-500 mb-4">パスワードを入力してください</p>
-            <input
-              type="text"
-              value={deletePassword}
-              onChange={e => setDeletePassword(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm mb-4"
-              placeholder="パスワード"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false)
-                  setDeletePassword('')
-                }}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-bold"
-              >
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '320px' }}>
+            <h3 style={{ fontWeight: '600', color: '#3D2314', marginBottom: '8px' }}>レシピを削除しますか？</h3>
+            <p style={{ fontSize: '13px', color: '#9A7060', marginBottom: '16px' }}>パスワードを入力してください</p>
+            <input type="text" value={deletePassword} onChange={e => setDeletePassword(e.target.value)}
+              style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px', marginBottom: '16px' }}
+              placeholder="パスワード" />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => { setShowDeleteModal(false); setDeletePassword('') }}
+                style={{ flex: 1, backgroundColor: '#F5EDE6', color: '#5C3D2E', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
                 キャンセル
               </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-bold hover:bg-red-600 disabled:opacity-50"
-              >
+              <button onClick={handleDelete} disabled={deleting}
+                style={{ flex: 1, backgroundColor: '#E8A87C', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
                 {deleting ? '削除中...' : '削除する'}
               </button>
             </div>
