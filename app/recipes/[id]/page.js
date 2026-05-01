@@ -133,7 +133,7 @@ export default function RecipeDetail({ params }) {
             <h3 className="font-bold text-gray-800 mb-4">レシピを削除しますか？</h3>
             <p className="text-sm text-gray-500 mb-4">パスワードを入力してください</p>
             <input
-              type="password"
+              type="text"
               value={deletePassword}
               onChange={e => setDeletePassword(e.target.value)}
               className="w-full border rounded-lg px-3 py-2 text-sm mb-4"
