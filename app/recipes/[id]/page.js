@@ -86,6 +86,11 @@ export default function RecipeDetail({ params }) {
       </button>
 
       <CommentSection recipeId={params.id} />
+      <div className="mt-8">
+        <a href="/" className="text-orange-500 hover:text-orange-600 text-sm font-bold">
+          ← 一覧に戻る
+        </a>
+      </div>
     </div>
   )
 }
