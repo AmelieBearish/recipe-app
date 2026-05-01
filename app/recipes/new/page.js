@@ -132,7 +132,7 @@ export default function NewRecipe() {
             name="password"
             value={form.password}
             onChange={handleChange}
-            type="password"
+            type="text"
             className="w-full border rounded-lg px-3 py-2 text-sm"
             placeholder="自分だけが知るパスワードを設定"
           />
