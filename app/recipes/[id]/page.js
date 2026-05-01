@@ -108,7 +108,7 @@ export default function RecipeDetail({ params }) {
 
       <div className="mt-8 flex gap-3">
         
-          href={'/recipes/' + params.id + '/edit'}
+        <a href={'/recipes/' + params.id + '/edit'}
           className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200"
         >
           編集
