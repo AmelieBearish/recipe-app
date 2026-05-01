@@ -180,7 +180,7 @@ export default function EditRecipe({ params }) {
             {submitting ? '更新中...' : '更新する'}
           </button>
           
-            href={'/recipes/' + params.id}
+            <a href={'/recipes/' + params.id}
             className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-bold text-center hover:bg-gray-200"
           >
             キャンセル
