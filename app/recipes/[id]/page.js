@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import CommentSection from '../../../components/CommentSection'
 
@@ -8,6 +8,9 @@ export default function RecipeDetail({ params }) {
   const [recipe, setRecipe] = useState(null)
   const [loading, setLoading] = useState(true)
   const [liked, setLiked] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     const fetch = async () => {
@@ -27,6 +30,22 @@ export default function RecipeDetail({ params }) {
     await updateDoc(doc(db, 'recipes', params.id), {
       likes: increment(1)
     })
+  }
+
+  const handleDelete = async () => {
+    if (deletePassword !== recipe.password) {
+      alert('パスワードが違います')
+      return
+    }
+    setDeleting(true)
+    try {
+      await deleteDoc(doc(db, 'recipes', params.id))
+      window.location.href = '/'
+    } catch (err) {
+      alert('削除に失敗しました')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   if (loading) return <p className="text-gray-400 text-sm">読み込み中...</p>
@@ -86,11 +105,14 @@ export default function RecipeDetail({ params }) {
       </button>
 
       <CommentSection recipeId={params.id} />
-      <div className="mt-8">
-        <a href="/" className="text-orange-500 hover:text-orange-600 text-sm font-bold">
-          ← 一覧に戻る
+
+      <div className="mt-8 flex gap-3">
+        
+          href={`/recipes/${params.id}/edit`}
+          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200"
+        >
+          編集
         </a>
-      </div>
-    </div>
-  )
-}
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          cl
