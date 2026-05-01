@@ -1,10 +1,10 @@
 'use client'
-import { useState } from 'react'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { useState, useEffect } from 'react'
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import ImageUpload from '../../../components/ImageUpload'
 
-const CATEGORIES = ['主菜', '副菜', '汁物', '丼・麺','おやつ・デザート', 'その他']
+const CATEGORIES = ['主菜', '副菜', '汁物', '丼・麺', 'おやつ・デザート', 'その他']
 
 export default function NewRecipe() {
   const [form, setForm] = useState({
@@ -16,8 +16,38 @@ export default function NewRecipe() {
     steps: '',
     imageUrl: '',
     password: '',
+    originId: '',
+    originTitle: '',
   })
   const [submitting, setSubmitting] = useState(false)
+  const [loadingOrigin, setLoadingOrigin] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const originId = params.get('originId')
+    if (!originId) return
+    setLoadingOrigin(true)
+    const fetchOrigin = async () => {
+      const snap = await getDoc(doc(db, 'recipes', originId))
+      if (snap.exists()) {
+        const data = snap.data()
+        setForm(f => ({
+          ...f,
+          title: data.title + '（アレンジ）',
+          description: data.description || '',
+          category: data.category || '主菜',
+          cookTime: data.cookTime || '',
+          ingredients: (data.ingredients || []).join('\n'),
+          steps: (data.steps || []).join('\n'),
+          imageUrl: data.imageUrl || '',
+          originId: originId,
+          originTitle: data.title,
+        }))
+      }
+      setLoadingOrigin(false)
+    }
+    fetchOrigin()
+  }, [])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -33,10 +63,16 @@ export default function NewRecipe() {
     setSubmitting(true)
     try {
       await addDoc(collection(db, 'recipes'), {
-        ...form,
+        title: form.title,
+        description: form.description,
+        category: form.category,
         cookTime: Number(form.cookTime) || 0,
         ingredients: form.ingredients.split('\n').filter(l => l.trim()),
         steps: form.steps.split('\n').filter(l => l.trim()),
+        imageUrl: form.imageUrl,
+        password: form.password,
+        originId: form.originId || null,
+        originTitle: form.originTitle || null,
         likes: 0,
         commentCount: 0,
         createdAt: serverTimestamp(),
@@ -49,100 +85,71 @@ export default function NewRecipe() {
     }
   }
 
+  if (loadingOrigin) return <p style={{ color: '#9A7060', fontSize: '14px' }}>読み込み中...</p>
+
   return (
     <div>
-      <h1 className="text-xl font-bold text-gray-800 mb-6">レシピを追加</h1>
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl shadow p-6">
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">料理名 *</label>
-          <input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            required
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder="例：肉じゃが"
-          />
+      <h1 style={{ fontSize: '20px', fontWeight: '600', color: '#3D2314', marginBottom: '24px' }}>
+        {form.originId ? 'アレンジレシピを追加' : 'レシピを追加'}
+      </h1>
+      {form.originId && (
+        <div style={{ backgroundColor: '#FFF0E6', border: '1px solid #F0E6DC', borderRadius: '12px', padding: '10px 16px', marginBottom: '20px', fontSize: '13px', color: '#C07048' }}>
+          元レシピ：{form.originTitle}
         </div>
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">説明</label>
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            rows={2}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder="例：ほっこり定番の煮物です"
-          />
+      )}
+      <form onSubmit={handleSubmit} style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '24px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>料理名 *</label>
+          <input name="title" value={form.title} onChange={handleChange} required
+            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+            placeholder="例：肉じゃが" />
         </div>
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-bold text-gray-700 mb-1">カテゴリ</label>
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-            >
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>説明</label>
+          <textarea name="description" value={form.description} onChange={handleChange} rows={2}
+            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+            placeholder="例：ほっこり定番の煮物です" />
+        </div>
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>カテゴリ</label>
+            <select name="category" value={form.category} onChange={handleChange}
+              style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}>
               {CATEGORIES.map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
-          <div className="w-28">
-            <label className="block text-sm font-bold text-gray-700 mb-1">調理時間（分）</label>
-            <input
-              name="cookTime"
-              value={form.cookTime}
-              onChange={handleChange}
-              type="number"
-              min="0"
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-              placeholder="30"
-            />
+          <div style={{ width: '120px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>調理時間（分）</label>
+            <input name="cookTime" value={form.cookTime} onChange={handleChange} type="number" min="0"
+              style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+              placeholder="30" />
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">材料（1行に1つ）</label>
-          <textarea
-            name="ingredients"
-            value={form.ingredients}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder={"じゃがいも 3個\n玉ねぎ 1個\n豚肉 200g"}
-          />
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>材料（1行に1つ）</label>
+          <textarea name="ingredients" value={form.ingredients} onChange={handleChange} rows={4}
+            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+            placeholder={"じゃがいも 3個\n玉ねぎ 1個\n豚肉 200g"} />
         </div>
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">手順（1行に1ステップ）</label>
-          <textarea
-            name="steps"
-            value={form.steps}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder={"じゃがいもを一口大に切る\n玉ねぎをくし切りにする\n鍋に油を熱し炒める"}
-          />
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>手順（1行に1ステップ）</label>
+          <textarea name="steps" value={form.steps} onChange={handleChange} rows={4}
+            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+            placeholder={"じゃがいもを一口大に切る\n玉ねぎをくし切りにする\n鍋に油を熱し炒める"} />
         </div>
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">写真</label>
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>写真</label>
           <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
         </div>
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">パスワード * （編集・削除に使用します）</label>
-          <input
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            type="text"
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder="自分だけが知るパスワードを設定"
-          />
-          <p className="text-xs text-gray-400 mt-1">※ パスワードを忘れると編集・削除できなくなります</p>
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>パスワード *（編集・削除に使用します）</label>
+          <input name="password" value={form.password} onChange={handleChange} type="text"
+            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+            placeholder="自分だけが知るパスワードを設定" />
+          <p style={{ fontSize: '12px', color: '#B09080', marginTop: '4px' }}>※ パスワードを忘れると編集・削除できなくなります</p>
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50"
-        >
+        <button type="submit" disabled={submitting}
+          style={{ width: '100%', backgroundColor: '#E8A87C', color: '#fff', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
           {submitting ? '登録中...' : 'レシピを登録する'}
         </button>
       </form>
