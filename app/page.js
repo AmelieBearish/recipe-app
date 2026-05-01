@@ -25,7 +25,7 @@ export default function Home() {
           href="/recipes/new"
           className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600"
         >
-          ＋ レシピを追加
+          + レシピを追加
         </a>
       </div>
       {loading && <p className="text-gray-400 text-sm">読み込み中...</p>}
