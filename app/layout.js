@@ -1,8 +1,12 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'レシピアプリ',
+  title: 'みんなのレシピ',
   description: '家族・友人とレシピを共有しよう',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icon.png',
+  },
 }
 
 export default function RootLayout({ children }) {
