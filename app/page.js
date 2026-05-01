@@ -22,7 +22,7 @@ export default function Home() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">レシピ一覧</h1>
         
-          href="/recipes/new"
+         <a href="/recipes/new"
           className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600"
         >
           + レシピを追加
