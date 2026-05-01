@@ -123,3 +123,29 @@ export default function NewRecipe() {
           />
         </div>
         <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">写真</label>
+          <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">パスワード * （編集・削除に使用します）</label>
+          <input
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            type="password"
+            className="w-full border rounded-lg px-3 py-2 text-sm"
+            placeholder="自分だけが知るパスワードを設定"
+          />
+          <p className="text-xs text-gray-400 mt-1">※ パスワードを忘れると編集・削除できなくなります</p>
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50"
+        >
+          {submitting ? '登録中...' : 'レシピを登録する'}
+        </button>
+      </form>
+    </div>
+  )
+}
