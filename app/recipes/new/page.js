@@ -33,7 +33,7 @@ export default function NewRecipe() {
         const data = snap.data()
         setForm(f => ({
           ...f,
-          title: data.title + '（アレンジ）',
+          title: '【アレンジ】' + data.title,
           description: data.description || '',
           category: data.category || '主菜',
           cookTime: data.cookTime || '',
