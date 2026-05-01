@@ -15,6 +15,7 @@ export default function NewRecipe() {
     ingredients: '',
     steps: '',
     imageUrl: '',
+    password: '',
   })
   const [submitting, setSubmitting] = useState(false)
 
@@ -25,6 +26,10 @@ export default function NewRecipe() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
+    if (!form.password.trim()) {
+      alert('パスワードを入力してください')
+      return
+    }
     setSubmitting(true)
     try {
       await addDoc(collection(db, 'recipes'), {
@@ -118,17 +123,3 @@ export default function NewRecipe() {
           />
         </div>
         <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">写真</label>
-          <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
-        </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50"
-        >
-          {submitting ? '登録中...' : 'レシピを登録する'}
-        </button>
-      </form>
-    </div>
-  )
-}
