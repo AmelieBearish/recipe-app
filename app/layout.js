@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
         <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #F0E6DC', padding: '14px 20px' }}>
           <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <a href="/">
-              <img src="/logo.png" alt="もぐレピ" style={{ height: '80px', width: 'auto', display: 'block' }} />
+              <img src="/logo.png" alt="もぐレピ" style={{ height: '100px', width: 'auto', display: 'block' }} />
             </a>
           </div>
         </header>
