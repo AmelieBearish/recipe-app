@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'みんなのレシピ',
-  description: '家族・友人とレシピを共有しよう',
+  title: 'もぐレピ',
+  description: 'これ美味しかったから、レシピ置いとくね！',
   icons: {
     icon: '/favicon.ico',
     apple: '/icon.png',
