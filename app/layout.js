@@ -14,9 +14,9 @@ export default function RootLayout({ children }) {
     <html lang="ja">
       <body style={{ backgroundColor: '#FDF6F0', minHeight: '100vh' }}>
         <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #F0E6DC', padding: '14px 20px' }}>
-          <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <a href="/" style={{ fontSize: '20px', fontWeight: '600', color: '#C07048', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              🍳 みんなのレシピ
+          <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <a href="/">
+              <img src="/logo.png" alt="もぐレピ" style={{ height: '80px', width: 'auto', display: 'block' }} />
             </a>
           </div>
         </header>
