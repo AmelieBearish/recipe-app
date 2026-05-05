@@ -1,4 +1,6 @@
 import './globals.css'
+import { AuthProvider } from '../components/AuthProvider'
+import Header from '../components/Header'
 
 export const metadata = {
   title: 'もぐレピ',
@@ -8,21 +10,16 @@ export const metadata = {
     apple: '/icon.png',
   },
 }
-
 export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body style={{ backgroundColor: '#FDF6F0', minHeight: '100vh' }}>
-        <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #F0E6DC', padding: '14px 20px' }}>
-          <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <a href="/">
-              <img src="/logo.png" alt="もぐレピ" style={{ height: '100px', width: 'auto', display: 'block' }} />
-            </a>
-          </div>
-        </header>
-        <main style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px' }}>
-          {children}
-        </main>
+        <AuthProvider>
+          <Header />
+          <main style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px' }}>
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   )
