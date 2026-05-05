@@ -11,7 +11,7 @@ export default function Header() {
         <a href="/" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
           <img src="/logo.png" alt="もぐレピ" style={{ height: '100px', width: 'auto', display: 'block' }} />
         </a>
-        <div>
+        <div style={{ marginLeft: 'auto' }}>
           {user === undefined ? null : user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <img src={user.photoURL} alt={user.displayName} style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
