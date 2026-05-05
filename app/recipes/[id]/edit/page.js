@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../../../lib/firebase'
 import ImageUpload from '../../../../components/ImageUpload'
 
-const CATEGORIES = ['主菜', '副菜', '汁物', '丼・麺', 'おやつ・デザート', 'その他']
+import { CATEGORIES } from '../../../../lib/categories'
 
 export default function EditRecipe({ params }) {
   const [form, setForm] = useState(null)
@@ -129,7 +129,7 @@ export default function EditRecipe({ params }) {
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 text-sm"
             >
-              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.id}</option>)}
             </select>
           </div>
           <div className="w-28">
