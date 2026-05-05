@@ -23,7 +23,7 @@ export default function Header() {
           ) : (
             <button onClick={signInWithGoogle}
               style={{ backgroundColor: '#C07048', color: '#fff', border: 'none', borderRadius: '20px', padding: '8px 16px', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>
-              Googleでログイン
+              ログイン
             </button>
           )}
         </div>
