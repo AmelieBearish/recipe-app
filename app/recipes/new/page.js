@@ -4,13 +4,13 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/fires
 import { db } from '../../../lib/firebase'
 import ImageUpload from '../../../components/ImageUpload'
 
-const CATEGORIES = ['主菜', '副菜', '汁物', '丼・麺', 'おやつ・デザート', 'その他']
+import { CATEGORIES } from '../../../lib/categories'
 
 export default function NewRecipe() {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    category: '主菜',
+    category: CATEGORIES[0].id,
     cookTime: '',
     ingredients: '',
     steps: '',
@@ -35,7 +35,7 @@ export default function NewRecipe() {
           ...f,
           title: '【アレンジ】' + data.title,
           description: data.description || '',
-          category: data.category || '主菜',
+          category: data.category || CATEGORIES[0].id,
           cookTime: data.cookTime || '',
           ingredients: (data.ingredients || []).join('\n'),
           steps: (data.steps || []).join('\n'),
@@ -115,7 +115,7 @@ export default function NewRecipe() {
             <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>カテゴリ</label>
             <select name="category" value={form.category} onChange={handleChange}
               style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}>
-              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.id}</option>)}
             </select>
           </div>
           <div style={{ width: '120px' }}>
