@@ -41,14 +41,23 @@ export default function CommentSection({ recipeId }) {
   return (
     <div className="mt-8">
       <h3 className="font-bold text-lg mb-4">💬 コメント</h3>
-      <div className="space-y-3 mb-6">
+      <div className="mb-6">
         {comments.length === 0 && (
           <p className="text-sm text-gray-400">まだコメントはありません</p>
         )}
         {comments.map(comment => (
-          <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
-            <p className="text-sm font-bold text-gray-700">{comment.name}</p>
-            <p className="text-sm text-gray-600 mt-1">{comment.body}</p>
+          <div key={comment.id} style={{ borderBottom: '1px solid #F0E6DC', padding: '8px 0', display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '0 6px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '600', color: '#C07048', flexShrink: 0 }}>{comment.name}</span>
+            <span style={{ fontSize: '13px', color: '#C07048', flexShrink: 0 }}>＜</span>
+            <span style={{ fontSize: '13px', color: '#5C3D2E', flex: 1, minWidth: '120px', wordBreak: 'break-all' }}>{comment.body}</span>
+            <span style={{ fontSize: '12px', color: '#B09080', flexShrink: 0, marginLeft: 'auto' }}>
+              {comment.createdAt?.toDate
+                ? (() => {
+                    const d = comment.createdAt.toDate()
+                    return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+                  })()
+                : ''}
+            </span>
           </div>
         ))}
       </div>
