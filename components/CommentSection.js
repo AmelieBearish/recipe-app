@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp, doc, updateDoc, increment } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
 export default function CommentSection({ recipeId }) {
@@ -15,7 +15,7 @@ export default function CommentSection({ recipeId }) {
       orderBy('createdAt', 'asc')
     )
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setComments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      setComments(snapshot.docs.map(d => ({ id: d.id, ...d.data() })))
     })
     return () => unsubscribe()
   }, [recipeId])
@@ -29,6 +29,9 @@ export default function CommentSection({ recipeId }) {
         name: name.trim(),
         body: body.trim(),
         createdAt: serverTimestamp(),
+      })
+      await updateDoc(doc(db, 'recipes', recipeId), {
+        commentCount: increment(1)
       })
       setBody('')
     } catch (err) {
