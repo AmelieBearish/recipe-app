@@ -1,24 +1,19 @@
 'use client'
+import { CATEGORIES } from '../lib/categories'
 
 export default function RecipeCard({ recipe }) {
+  const categoryDefault = CATEGORIES.find(c => c.id === recipe.category)?.defaultImage
   return (
     <a href={'/recipes/' + recipe.id} style={{ textDecoration: 'none', display: 'block' }}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', marginBottom: '14px', overflow: 'hidden', transition: 'box-shadow 0.2s' }}
         onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(192,112,72,0.10)'}
         onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
       >
-        {recipe.imageUrl && (
-          <img
-            src={recipe.imageUrl}
-            alt={recipe.title}
-            style={{ width: '100%', height: '180px', objectFit: 'cover' }}
-          />
-        )}
-        {!recipe.imageUrl && (
-          <div style={{ width: '100%', height: '100px', backgroundColor: '#FFF0E6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
-            🍳
-          </div>
-        )}
+        <img
+          src={recipe.imageUrl || categoryDefault || '/images/categories/other.jpg'}
+          alt={recipe.title}
+          style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+        />
         <div style={{ padding: '12px 16px 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <span style={{ backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '11px', padding: '3px 10px', borderRadius: '20px', fontWeight: '500' }}>
