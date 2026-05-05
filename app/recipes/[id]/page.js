@@ -121,7 +121,7 @@ export default function RecipeDetail({ params }) {
       </div>
 
      {arranges.length > 0 && (
-        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #F0E6DC' }}>
+        <div style={{ marginTop: '0px', paddingTop: '24px', borderTop: '1px solid #F0E6DC' }}>
           <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '12px' }}>このレシピのアレンジ</h3>
           <div>
             {arranges.map(a => (
