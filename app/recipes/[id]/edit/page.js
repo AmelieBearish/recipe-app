@@ -168,7 +168,16 @@ export default function EditRecipe({ params }) {
           <label className="block text-sm font-bold text-gray-700 mb-1">写真</label>
           <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
           {form.imageUrl && (
-            <img src={form.imageUrl} alt="現在の写真" className="mt-2 rounded w-full max-h-48 object-cover" />
+            <div className="mt-2">
+              <img src={form.imageUrl} alt="現在の写真" className="rounded w-full max-h-48 object-cover" />
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, imageUrl: '' })}
+                className="mt-1 text-sm text-red-500 hover:text-red-700"
+              >
+                写真を削除
+              </button>
+            </div>
           )}
         </div>
         <div className="flex gap-3">
