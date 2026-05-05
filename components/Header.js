@@ -6,7 +6,7 @@ export default function Header() {
   const { user } = useAuth()
 
   return (
-    <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #F0E6DC', padding: '14px 20px' }}>
+    <header style={{ backgroundColor: '#fff', borderBottom: 'none', padding: '14px 20px' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
         <a href="/" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
           <img src="/logo.png" alt="もぐレピ" style={{ height: '100px', width: 'auto', display: 'block' }} />
