@@ -10,7 +10,7 @@ export default function RecipeCard({ recipe }) {
         onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
       >
         <img
-          src={recipe.imageUrl || categoryDefault || '/images/categories/other.jpg'}
+          src={recipe.imageUrl || categoryDefault || '/images/categories/other.png'}
           alt={recipe.title}
           style={{ width: '100%', height: '180px', objectFit: 'cover' }}
         />
