@@ -120,9 +120,7 @@ export default function RecipeDetail({ params }) {
         </a>
       </div>
 
-      <CommentSection recipeId={params.id} />
-
-      {arranges.length > 0 && (
+     {arranges.length > 0 && (
         <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #F0E6DC' }}>
           <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '12px' }}>このレシピのアレンジ</h3>
           <div>
@@ -141,7 +139,9 @@ export default function RecipeDetail({ params }) {
           </div>
         </div>
       )}
-
+        
+<CommentSection recipeId={params.id} />
+        
       <div style={{ marginTop: '24px', display: 'flex', gap: '10px' }}>
         <a href={'/recipes/' + params.id + '/edit'}
           style={{ backgroundColor: '#F5EDE6', color: '#5C3D2E', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
