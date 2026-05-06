@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../../../lib/firebase'
 import ImageUpload from '../../../../components/ImageUpload'
+import { useAuth } from '../../../../components/AuthProvider'
 
 import { CATEGORIES } from '../../../../lib/categories'
 
 export default function EditRecipe({ params }) {
+  const { user } = useAuth()
   const [form, setForm] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [password, setPassword] = useState('')
-  const [verified, setVerified] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -26,22 +26,13 @@ export default function EditRecipe({ params }) {
           ingredients: (data.ingredients || []).join('\n'),
           steps: (data.steps || []).join('\n'),
           imageUrl: data.imageUrl || '',
-          password: data.password || '',
+          authorId: data.authorId || null,
         })
       }
       setLoading(false)
     }
     fetchRecipe()
   }, [params.id])
-
-  const handleVerify = (e) => {
-    e.preventDefault()
-    if (password !== form.password) {
-      alert('パスワードが違います')
-      return
-    }
-    setVerified(true)
-  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -69,32 +60,13 @@ export default function EditRecipe({ params }) {
     }
   }
 
-  if (loading) return <p className="text-gray-400 text-sm">読み込み中...</p>
-  if (!form) return <p className="text-gray-400 text-sm">レシピが見つかりません</p>
-
-  if (!verified) {
-    return (
-      <div className="bg-white rounded-xl shadow p-6 max-w-sm mx-auto mt-12">
-        <h1 className="text-xl font-bold text-gray-800 mb-4">パスワードを入力</h1>
-        <p className="text-sm text-gray-500 mb-4">編集するにはパスワードが必要です</p>
-        <form onSubmit={handleVerify} className="space-y-4">
-          <input
-            type="text"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-            placeholder="パスワード"
-          />
-          <button
-            type="submit"
-            className="w-full bg-orange-500 text-white py-2 rounded-lg font-bold hover:bg-orange-600"
-          >
-            確認
-          </button>
-        </form>
-      </div>
-    )
-  }
+  if (loading) return <p style={{ color: '#9A7060', fontSize: '14px' }}>読み込み中...</p>
+  if (!form) return <p style={{ color: '#9A7060', fontSize: '14px' }}>レシピが見つかりません</p>
+  if (!user || !form.authorId || user.uid !== form.authorId) return (
+    <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
+      <p style={{ color: '#9A7060', fontSize: '14px' }}>編集する権限がありません</p>
+    </div>
+  )
 
   return (
     <div>
