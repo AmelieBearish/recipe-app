@@ -10,6 +10,7 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    document.title = 'もぐレピ - 好き！一覧'
     if (!user) {
       setLoading(false)
       return
