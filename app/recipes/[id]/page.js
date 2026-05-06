@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react'
 import { doc, getDoc, updateDoc, increment, deleteDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import CommentSection from '../../../components/CommentSection'
+import { useAuth } from '../../../components/AuthProvider'
 
 export default function RecipeDetail({ params }) {
   const [recipe, setRecipe] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
   const [liked, setLiked] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletePassword, setDeletePassword] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [arranges, setArranges] = useState([])
 
@@ -42,10 +43,6 @@ export default function RecipeDetail({ params }) {
   }
 
   const handleDelete = async () => {
-    if (deletePassword !== recipe.password) {
-      alert('パスワードが違います')
-      return
-    }
     setDeleting(true)
     try {
       await deleteDoc(doc(db, 'recipes', params.id))
@@ -142,16 +139,18 @@ export default function RecipeDetail({ params }) {
         
 <CommentSection recipeId={params.id} />
         
-      <div style={{ marginTop: '24px', display: 'flex', gap: '10px' }}>
-        <a href={'/recipes/' + params.id + '/edit'}
-          style={{ backgroundColor: '#F5EDE6', color: '#5C3D2E', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
-          編集
-        </a>
-        <button onClick={() => setShowDeleteModal(true)}
-          style={{ backgroundColor: '#FDECEA', color: '#C0392B', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', border: 'none', cursor: 'pointer' }}>
-          削除
-        </button>
-      </div>
+      {user && recipe.authorId && user.uid === recipe.authorId && (
+        <div style={{ marginTop: '24px', display: 'flex', gap: '10px' }}>
+          <a href={'/recipes/' + params.id + '/edit'}
+            style={{ backgroundColor: '#F5EDE6', color: '#5C3D2E', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
+            編集
+          </a>
+          <button onClick={() => setShowDeleteModal(true)}
+            style={{ backgroundColor: '#FDECEA', color: '#C0392B', padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '500', border: 'none', cursor: 'pointer' }}>
+            削除
+          </button>
+        </div>
+      )}
 
       <div style={{ marginTop: '24px' }}>
         <a href="/" style={{ color: '#C07048', fontSize: '13px', fontWeight: '500', textDecoration: 'none' }}>
@@ -163,12 +162,9 @@ export default function RecipeDetail({ params }) {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '320px' }}>
             <h3 style={{ fontWeight: '600', color: '#3D2314', marginBottom: '8px' }}>レシピを削除しますか？</h3>
-            <p style={{ fontSize: '13px', color: '#9A7060', marginBottom: '16px' }}>パスワードを入力してください</p>
-            <input type="text" value={deletePassword} onChange={e => setDeletePassword(e.target.value)}
-              style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px', marginBottom: '16px' }}
-              placeholder="パスワード" />
+            <p style={{ fontSize: '13px', color: '#9A7060', marginBottom: '16px' }}>この操作は取り消せません</p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => { setShowDeleteModal(false); setDeletePassword('') }}
+              <button onClick={() => setShowDeleteModal(false)}
                 style={{ flex: 1, backgroundColor: '#F5EDE6', color: '#5C3D2E', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
                 キャンセル
               </button>
