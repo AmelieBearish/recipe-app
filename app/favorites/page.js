@@ -24,17 +24,17 @@ export default function FavoritesPage() {
 
   if (!user) return (
     <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
-      <p style={{ color: '#9A7060', fontSize: '14px' }}>ログインするとお気に入り一覧を見られます</p>
+      <p style={{ color: '#9A7060', fontSize: '14px' }}>ログインすると好き！一覧を見られます</p>
     </div>
   )
 
   return (
     <div>
-      <h1 style={{ fontSize: '20px', fontWeight: '600', color: '#3D2314', marginBottom: '20px' }}>❤ お気に入り</h1>
+      <h1 style={{ fontSize: '20px', fontWeight: '600', color: '#3D2314', marginBottom: '20px' }}>❤ 好き！</h1>
 
       {favorites.length === 0 ? (
         <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
-          <p style={{ color: '#9A7060', fontSize: '14px' }}>まだお気に入りがありません</p>
+          <p style={{ color: '#9A7060', fontSize: '14px' }}>まだ好きなレシピがありません</p>
         </div>
       ) : (
         <div>
