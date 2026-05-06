@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react'
 import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import ImageUpload from '../../../components/ImageUpload'
+import { useAuth } from '../../../components/AuthProvider'
 
 import { CATEGORIES } from '../../../lib/categories'
 
 export default function NewRecipe() {
+  const { user } = useAuth()
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -15,7 +17,6 @@ export default function NewRecipe() {
     ingredients: '',
     steps: '',
     imageUrl: '',
-    password: '',
     originId: '',
     originTitle: '',
   })
@@ -56,10 +57,6 @@ export default function NewRecipe() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
-    if (!form.password.trim()) {
-      alert('パスワードを入力してください')
-      return
-    }
     setSubmitting(true)
     try {
       await addDoc(collection(db, 'recipes'), {
@@ -70,7 +67,7 @@ export default function NewRecipe() {
         ingredients: form.ingredients.split('\n').filter(l => l.trim()),
         steps: form.steps.split('\n').filter(l => l.trim()),
         imageUrl: form.imageUrl,
-        password: form.password,
+        authorId: user.uid,
         originId: form.originId || null,
         originTitle: form.originTitle || null,
         likes: 0,
@@ -86,6 +83,11 @@ export default function NewRecipe() {
   }
 
   if (loadingOrigin) return <p style={{ color: '#9A7060', fontSize: '14px' }}>読み込み中...</p>
+  if (!user) return (
+    <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
+      <p style={{ color: '#9A7060', fontSize: '14px', marginBottom: '8px' }}>レシピを投稿するにはログインが必要です</p>
+    </div>
+  )
 
   return (
     <div>
@@ -140,13 +142,6 @@ export default function NewRecipe() {
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>写真</label>
           <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
-        </div>
-        <div style={{ marginBottom: '24px' }}>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>パスワード *（編集・削除に使用します）</label>
-          <input name="password" value={form.password} onChange={handleChange} type="text"
-            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
-            placeholder="自分だけが知るパスワードを設定" />
-          <p style={{ fontSize: '12px', color: '#B09080', marginTop: '4px' }}>※ パスワードを忘れると編集・削除できなくなります</p>
         </div>
         <button type="submit" disabled={submitting}
           style={{ width: '100%', backgroundColor: '#E8A87C', color: '#fff', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
