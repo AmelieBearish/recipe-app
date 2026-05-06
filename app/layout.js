@@ -3,7 +3,7 @@ import { AuthProvider } from '../components/AuthProvider'
 import Header from '../components/Header'
 
 export const metadata = {
-  title: 'もぐレピ',
+  title: 'もぐレピ - レシピ一覧',
   description: 'これ美味しかったから、レシピ置いとくね！',
   icons: {
     icon: '/favicon.ico',
