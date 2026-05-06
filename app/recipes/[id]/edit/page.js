@@ -28,6 +28,7 @@ export default function EditRecipe({ params }) {
           imageUrl: data.imageUrl || '',
           authorId: data.authorId || null,
         })
+        document.title = 'もぐレピ - ' + (data.title || '編集中')
       }
       setLoading(false)
     }
