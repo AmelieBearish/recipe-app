@@ -1,18 +1,12 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, getRedirectResult } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../lib/auth'
 const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined)
   useEffect(() => {
-    getRedirectResult(auth).then((result) => {
-      console.log('redirectResult:', JSON.stringify(result))
-    }).catch((e) => {
-      console.log('redirectError:', e.code, e.message)
-    })
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('authStateChanged:', JSON.stringify(user))
       setUser(user)
     })
     return () => unsubscribe()
