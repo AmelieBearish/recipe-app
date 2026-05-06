@@ -19,7 +19,9 @@ export default function RecipeDetail({ params }) {
     const fetchRecipe = async () => {
       const snap = await getDoc(doc(db, 'recipes', params.id))
       if (snap.exists()) {
-        setRecipe({ id: snap.id, ...snap.data() })
+        const data = { id: snap.id, ...snap.data() }
+        setRecipe(data)
+        document.title = 'もぐレピ - ' + data.title
       }
       setLoading(false)
     }
