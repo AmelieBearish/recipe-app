@@ -8,7 +8,8 @@ export default function Home() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+ useEffect(() => {
+    document.title = 'もぐレピ - レシピ一覧'
     const q = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'))
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setRecipes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
