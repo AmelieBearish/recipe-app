@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc, increment, deleteDoc, collection, query, where,
 import { db } from '../../../lib/firebase'
 import CommentSection from '../../../components/CommentSection'
 import { useAuth } from '../../../components/AuthProvider'
+import { checkLiked, addLike, removeLike } from '../../../lib/favorites'
 
 export default function RecipeDetail({ params }) {
   const [recipe, setRecipe] = useState(null)
@@ -33,13 +34,24 @@ export default function RecipeDetail({ params }) {
     return () => unsubscribe()
   }, [params.id])
 
+  useEffect(() => {
+    if (!user) return
+    checkLiked(user.uid, params.id).then(result => setLiked(result))
+  }, [user, params.id])
+
   const handleLike = async () => {
-    if (liked) return
-    setLiked(true)
-    setRecipe(r => ({ ...r, likes: (r.likes || 0) + 1 }))
-    await updateDoc(doc(db, 'recipes', params.id), {
-      likes: increment(1)
-    })
+    if (!user) return
+    if (liked) {
+      setLiked(false)
+      setRecipe(r => ({ ...r, likes: Math.max((r.likes || 0) - 1, 0) }))
+      await removeLike(user.uid, params.id)
+      await updateDoc(doc(db, 'recipes', params.id), { likes: increment(-1) })
+    } else {
+      setLiked(true)
+      setRecipe(r => ({ ...r, likes: (r.likes || 0) + 1 }))
+      await addLike(user.uid, recipe)
+      await updateDoc(doc(db, 'recipes', params.id), { likes: increment(1) })
+    }
   }
 
   const handleDelete = async () => {
@@ -106,11 +118,17 @@ export default function RecipeDetail({ params }) {
         </ol>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <button onClick={handleLike} disabled={liked}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', border: 'none', cursor: liked ? 'default' : 'pointer', backgroundColor: liked ? '#FFE4E4' : '#F5EDE6', color: liked ? '#E07070' : '#9A7060', fontSize: '14px', fontWeight: '500' }}>
-          ❤ {liked ? 'ありがとう！' : '好き！'} {recipe.likes || 0}
-        </button>
+     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        {user ? (
+          <button onClick={handleLike}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', border: 'none', cursor: 'pointer', backgroundColor: liked ? '#FFE4E4' : '#F5EDE6', color: liked ? '#E07070' : '#9A7060', fontSize: '14px', fontWeight: '500' }}>
+            ❤ {liked ? 'やっぱりやめる' : '好き！'} {recipe.likes || 0}
+          </button>
+        ) : (
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#F5EDE6', color: '#9A7060', fontSize: '14px', fontWeight: '500' }}>
+            ❤ {recipe.likes || 0}
+          </span>
+        )}
         <a href={'/recipes/new?originId=' + params.id}
           style={{ display: 'inline-block', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '14px', fontWeight: '500', textDecoration: 'none', border: '1px solid #F0E6DC' }}>
           アレンジする
