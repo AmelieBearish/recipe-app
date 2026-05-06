@@ -23,7 +23,8 @@ export default function NewRecipe() {
   const [submitting, setSubmitting] = useState(false)
   const [loadingOrigin, setLoadingOrigin] = useState(false)
 
-  useEffect(() => {
+ useEffect(() => {
+    document.title = 'もぐレピ - レシピ投稿'
     const params = new URLSearchParams(window.location.search)
     const originId = params.get('originId')
     if (!originId) return
