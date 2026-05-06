@@ -27,7 +27,8 @@ export default function Home() {
     const keywords = searchText.trim().split(/\s+/).filter(Boolean)
     return recipes.filter(recipe => {
       const categoryMatch = selectedCategory === '' || recipe.category === selectedCategory
-      const searchTarget = [recipe.title, recipe.description].filter(Boolean).join(' ')
+      const ingredientsText = Array.isArray(recipe.ingredients) ? recipe.ingredients.join(' ') : ''
+      const searchTarget = [recipe.title, recipe.description, ingredientsText].filter(Boolean).join(' ')
       const keywordsMatch = keywords.every(kw =>
         searchTarget.toLowerCase().includes(kw.toLowerCase())
       )
