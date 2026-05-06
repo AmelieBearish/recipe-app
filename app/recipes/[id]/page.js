@@ -122,7 +122,7 @@ export default function RecipeDetail({ params }) {
         {user ? (
           <button onClick={handleLike}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', border: 'none', cursor: 'pointer', backgroundColor: liked ? '#FFE4E4' : '#F5EDE6', color: liked ? '#E07070' : '#9A7060', fontSize: '14px', fontWeight: '500' }}>
-            ❤ {liked ? 'やっぱりやめる' : '好き！'} {recipe.likes || 0}
+            ❤ {liked ? 'やめる' : '好き！'} {recipe.likes || 0}
           </button>
         ) : (
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#F5EDE6', color: '#9A7060', fontSize: '14px', fontWeight: '500' }}>
