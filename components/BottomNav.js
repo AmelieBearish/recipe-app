@@ -11,7 +11,7 @@ export default function BottomNav() {
 
   const navItems = [
     { href: '/', label: '探す', icon: Search },
-    { href: user ? '/recipes/new' : null, label: '追加', icon: PlusCircle },
+    { href: '/recipes/new', label: '追加', icon: PlusCircle },
     { href: '/favorites', label: '好き！', icon: Heart },
   ];
 
@@ -23,7 +23,7 @@ export default function BottomNav() {
         return (
           <Link
             key={label}
-            href={href ?? '/'}
+            href={href}
             onClick={handleClick}
             className="flex flex-col items-center justify-center flex-1 h-full gap-0.5"
           >
