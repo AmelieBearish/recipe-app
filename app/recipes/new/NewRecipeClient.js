@@ -25,7 +25,7 @@ export default function NewRecipeClient() {
     description: '',
     category: CATEGORIES[0].id,
     cookTime: '',
-    ingredients: '',
+    ingredients: [{ name: '', amount: '' }],
     steps: '',
     imageUrl: '',
     originId: '',
@@ -49,7 +49,13 @@ export default function NewRecipeClient() {
           description: data.description || '',
           category: data.category || CATEGORIES[0].id,
           cookTime: data.cookTime || '',
-          ingredients: (data.ingredients || []).join('\n'),
+          ingredients: (data.ingredients || []).length > 0
+            ? (data.ingredients || []).map(ing =>
+                typeof ing === 'string'
+                  ? { name: ing, amount: '' }
+                  : { name: ing.name || '', amount: ing.amount || '' }
+              )
+            : [{ name: '', amount: '' }],
           steps: (data.steps || []).join('\n'),
           imageUrl: data.imageUrl || '',
           originId: originId,
@@ -65,17 +71,34 @@ export default function NewRecipeClient() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  const handleIngredientChange = (index, field, value) => {
+    const updated = form.ingredients.map((ing, i) =>
+      i === index ? { ...ing, [field]: value } : ing
+    )
+    setForm({ ...form, ingredients: updated })
+  }
+
+  const addIngredient = () => {
+    setForm({ ...form, ingredients: [...form.ingredients, { name: '', amount: '' }] })
+  }
+
+  const removeIngredient = (index) => {
+    if (form.ingredients.length === 1) return
+    setForm({ ...form, ingredients: form.ingredients.filter((_, i) => i !== index) })
+  }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
     setSubmitting(true)
     try {
-      await addDoc(collection(db, 'recipes'), {
+     await addDoc(collection(db, 'recipes'), {
         title: form.title,
         description: form.description,
         category: form.category,
         cookTime: Number(form.cookTime) || 0,
-        ingredients: form.ingredients.split('\n').filter(l => l.trim()),
+        ingredients: form.ingredients.filter(ing => ing.name.trim()),
         steps: form.steps.split('\n').filter(l => l.trim()),
         imageUrl: form.imageUrl,
         authorId: user.uid,
@@ -145,10 +168,31 @@ export default function NewRecipeClient() {
           </div>
         </div>
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>材料（1行に1つ）</label>
-          <textarea name="ingredients" value={form.ingredients} onChange={handleChange} rows={4}
-            style={{ width: '100%', border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
-            placeholder={"じゃがいも 3個\n玉ねぎ 1個\n豚肉 200g"} />
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>材料</label>
+          {form.ingredients.map((ing, index) => (
+            <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+              <input
+                value={ing.name}
+                onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                style={{ flex: 2, border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+                placeholder="例：じゃがいも"
+              />
+              <input
+                value={ing.amount}
+                onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                style={{ flex: 1, border: '1px solid #F0E6DC', borderRadius: '10px', padding: '10px 12px', fontSize: '14px' }}
+                placeholder="例：3個"
+              />
+              <button type="button" onClick={() => removeIngredient(index)}
+                style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #F0E6DC', backgroundColor: '#fff', color: '#B09080', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                ×
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addIngredient}
+            style={{ marginTop: '4px', fontSize: '13px', color: '#C07048', backgroundColor: '#FFF0E6', border: '1px solid #F0E6DC', borderRadius: '20px', padding: '6px 16px', cursor: 'pointer' }}>
+            ＋ 材料を追加
+          </button>
         </div>
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>手順（1行に1ステップ）</label>
