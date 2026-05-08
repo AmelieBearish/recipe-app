@@ -40,11 +40,16 @@ export default function Home() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-800">レシピ一覧</h1>
-        {user && (
-          <a href="/recipes/new" className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600">
-            レシピを追加
+        <div className="hidden md:flex items-center gap-2">
+          <a href="/favorites" className="border border-[#C07048] text-[#C07048] px-4 py-2 rounded-lg text-sm hover:bg-[#C07048] hover:text-white">
+            ❤ 好き！
           </a>
-        )}
+          {user && (
+            <a href="/recipes/new" className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600">
+              レシピを追加
+            </a>
+          )}
+        </div>
       </div>
       <SearchFilter
         searchText={searchText}
