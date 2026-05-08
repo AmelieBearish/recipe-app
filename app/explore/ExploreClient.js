@@ -1,61 +1,54 @@
 'use client';
-
-import { useEffect, useState } from 'react';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState, useMemo } from 'react';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import RecipeCard from '@/components/RecipeCard';
 import SearchFilter from '@/components/SearchFilter';
-import { CATEGORIES } from '@/lib/categories';
-
 export default function ExploreClient() {
   const [recipes, setRecipes] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-
   useEffect(() => {
-    const fetchRecipes = async () => {
-      const q = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'));
-      const snapshot = await getDocs(q);
-      setRecipes(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    };
-    fetchRecipes();
+    const q = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setRecipes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
-
-  const filtered = recipes.filter((recipe) => {
-    const matchesCategory = selectedCategory
-      ? recipe.category === selectedCategory
-      : true;
-    if (!searchQuery.trim()) return matchesCategory;
-    const keywords = searchQuery.trim().split(/\s+/);
-    const target = [
-      recipe.title,
-      recipe.description,
-      ...(recipe.ingredients || []).map((i) => i.name),
-    ]
-      .join(' ')
-      .toLowerCase();
-    return matchesCategory && keywords.every((kw) => target.includes(kw.toLowerCase()));
-  });
-
+  const filteredRecipes = useMemo(() => {
+    const keywords = searchText.trim().split(/\s+/).filter(Boolean);
+    return recipes.filter(recipe => {
+      const categoryMatch = selectedCategory === '' || recipe.category === selectedCategory;
+      const ingredientsText = Array.isArray(recipe.ingredients) ? recipe.ingredients.join(' ') : '';
+      const searchTarget = [recipe.title, recipe.description, ingredientsText].filter(Boolean).join(' ');
+      const keywordsMatch = keywords.every(kw =>
+        searchTarget.toLowerCase().includes(kw.toLowerCase())
+      );
+      return categoryMatch && keywordsMatch;
+    });
+  }, [recipes, searchText, selectedCategory]);
   return (
-    <main className="max-w-2xl mx-auto px-4 py-6 pb-24">
-      <h1 className="text-2xl font-bold text-[#5C4A32] mb-4">探す</h1>
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold text-gray-800">探す</h1>
+      </div>
       <SearchFilter
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        searchText={searchText}
+        onSearchChange={setSearchText}
         selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        categories={CATEGORIES}
+        onCategoryChange={setSelectedCategory}
       />
-      {filtered.length === 0 ? (
-        <p className="text-center text-[#A89880] mt-12">レシピが見つかりませんでした</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          {filtered.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </div>
+      {loading && <p className="text-gray-400 text-sm">読み込み中...</p>}
+      {!loading && filteredRecipes.length === 0 && (
+        <p className="text-gray-400 text-sm">条件に一致するレシピが見つかりませんでした。</p>
       )}
-    </main>
+      <div className="grid gap-4">
+        {filteredRecipes.map(recipe => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))}
+      </div>
+    </div>
   );
 }
