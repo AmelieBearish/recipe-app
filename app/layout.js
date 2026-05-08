@@ -17,10 +17,10 @@ export default function RootLayout({ children }) {
       <body style={{ backgroundColor: '#FDF6F0', minHeight: '100vh' }}>
         <AuthProvider>
           <Header />
-          <main style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px' }}>
+          <main style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px', paddingBottom: '80px' }}>
             {children}
-          <BottomNav />
           </main>
+          <BottomNav />
         </AuthProvider>
       </body>
     </html>
