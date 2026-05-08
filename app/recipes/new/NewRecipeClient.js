@@ -4,10 +4,22 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/fires
 import { db } from '../../../lib/firebase'
 import ImageUpload from '../../../components/ImageUpload'
 import { useAuth } from '../../../components/AuthProvider'
+import { signInWithGoogle } from '../../../lib/auth'
 import { CATEGORIES } from '../../../lib/categories'
 
 export default function NewRecipeClient() {
   const { user } = useAuth()
+  const [popupBlocked, setPopupBlocked] = useState(false)
+  const handleLogin = async () => {
+    try {
+      setPopupBlocked(false)
+      await signInWithGoogle()
+    } catch (e) {
+      if (e.code === 'auth/popup-blocked') {
+        setPopupBlocked(true)
+      }
+    }
+  }
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -84,7 +96,13 @@ export default function NewRecipeClient() {
   if (loadingOrigin) return <p style={{ color: '#9A7060', fontSize: '14px' }}>読み込み中...</p>
   if (!user) return (
     <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
-      <p style={{ color: '#9A7060', fontSize: '14px', marginBottom: '8px' }}>レシピを投稿するにはログインが必要です</p>
+      <p style={{ color: '#9A7060', fontSize: '14px', marginBottom: '16px' }}>レシピを投稿するにはログインが必要です</p>
+      <button onClick={handleLogin} style={{ backgroundColor: '#C07048', color: '#fff', border: 'none', borderRadius: '20px', padding: '10px 24px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
+        Googleでログイン
+      </button>
+      {popupBlocked && (
+        <p style={{ fontSize: '11px', color: '#C07048', marginTop: '8px' }}>ポップアップを許可してください</p>
+      )}
     </div>
   )
 
