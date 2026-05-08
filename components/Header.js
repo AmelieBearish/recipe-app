@@ -22,7 +22,7 @@ export default function Header() {
         <a href="/" style={{ display: 'block', textAlign: 'center' }}>
           <img src="/logo.png" alt="もぐレピ" style={{ height: '100px', width: 'auto', display: 'inline-block' }} />
         </a>
-        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+       <div className="hidden md:block" style={{ position: 'absolute', right: 0, bottom: 0 }}>
           {user === undefined ? null : user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <button onClick={signOutUser}
