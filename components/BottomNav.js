@@ -11,7 +11,7 @@ export default function BottomNav() {
 
   const navItems = [
     { href: '/', label: 'ホーム', icon: Home },
-    { href: '/explore', label: '検索', icon: Search },
+    { href: '/explore', label: '探す', icon: Search },
     ...(user ? [{ href: '/recipes/new', label: '追加', icon: PlusCircle }] : []),
     { href: '/favorites', label: '好き！', icon: Heart },
   ];
