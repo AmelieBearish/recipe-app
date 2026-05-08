@@ -19,7 +19,7 @@ export default function BottomNav() {
    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FDFAF5] border-t border-[#E8DDD0] flex justify-around items-center h-16 pb-safe">
      {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href;
-        const handleClick = !user && label === '追加' ? (e) => { e.preventDefault(); signInWithGoogle() } : undefined;
+        const handleClick = undefined;
         return (
           <Link
             key={label}
