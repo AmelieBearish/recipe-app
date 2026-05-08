@@ -37,9 +37,7 @@ export default function BottomNav() {
             >
               {label}
             </span>
-            {!user && label === '追加' && (
-              <span className="text-[8px] text-[#A89880]">要ログイン</span>
-            )}
+          
           </Link>
         );
       })}
