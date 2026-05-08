@@ -11,18 +11,20 @@ export default function BottomNav() {
 
   const navItems = [
     { href: '/', label: '探す', icon: Search },
-    ...(user ? [{ href: '/recipes/new', label: '追加', icon: PlusCircle }] : []),
+    { href: user ? '/recipes/new' : null, label: '追加', icon: PlusCircle },
     { href: '/favorites', label: '好き！', icon: Heart },
   ];
 
   return (
    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FDFAF5] border-t border-[#E8DDD0] flex justify-around items-center h-16 pb-safe">
-      {navItems.map(({ href, label, icon: Icon }) => {
+     {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href;
+        const handleClick = !user && label === '追加' ? (e) => { e.preventDefault(); signInWithGoogle() } : undefined;
         return (
           <Link
-            key={href}
-            href={href}
+            key={label}
+            href={href ?? '/'}
+            onClick={handleClick}
             className="flex flex-col items-center justify-center flex-1 h-full gap-0.5"
           >
             <Icon
@@ -35,6 +37,9 @@ export default function BottomNav() {
             >
               {label}
             </span>
+            {!user && label === '追加' && (
+              <span className="text-[8px] text-[#A89880]">要ログイン</span>
+            )}
           </Link>
         );
       })}
