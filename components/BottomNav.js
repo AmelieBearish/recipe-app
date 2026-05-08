@@ -1,9 +1,9 @@
 'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
-import { Search, PlusCircle, Heart } from 'lucide-react';
+import { signInWithGoogle, signOutUser } from '../lib/auth';
+import { Search, PlusCircle, Heart, LogIn, LogOut } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -38,6 +38,23 @@ export default function BottomNav() {
           </Link>
         );
       })}
+      {user ? (
+        <button
+          onClick={signOutUser}
+          className="flex flex-col items-center justify-center flex-1 h-full gap-0.5"
+        >
+          <LogOut size={22} className="text-[#A89880]" strokeWidth={1.8} />
+          <span className="text-[10px] text-[#A89880]">ログアウト</span>
+        </button>
+      ) : (
+        <button
+          onClick={signInWithGoogle}
+          className="flex flex-col items-center justify-center flex-1 h-full gap-0.5"
+        >
+          <LogIn size={22} className="text-[#A89880]" strokeWidth={1.8} />
+          <span className="text-[10px] text-[#A89880]">ログイン</span>
+        </button>
+      )}
     </nav>
   );
 }
