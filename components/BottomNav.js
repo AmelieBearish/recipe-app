@@ -3,15 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
-import { Home, Search, PlusCircle, Heart } from 'lucide-react';
+import { Search, PlusCircle, Heart } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { user } = useAuth();
 
   const navItems = [
-    { href: '/', label: 'ホーム', icon: Home },
-    { href: '/explore', label: '探す', icon: Search },
+    { href: '/', label: '探す', icon: Search },
     ...(user ? [{ href: '/recipes/new', label: '追加', icon: PlusCircle }] : []),
     { href: '/favorites', label: '好き！', icon: Heart },
   ];
