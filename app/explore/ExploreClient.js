@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import RecipeCard from '@/components/RecipeCard';
-import SearchFilter from '@/components/SearchFilter';
+import { db } from '../../lib/firebase';
+import RecipeCard from '../../components/RecipeCard';
+import SearchFilter from '../../components/SearchFilter';
 export default function ExploreClient() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
