@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../components/AuthProvider'
 import { getFavorites } from '../../lib/favorites'
+import { signInWithGoogle } from '../../lib/auth'
 import { CATEGORIES } from '../../lib/categories'
 
 export default function FavoritesPage() {
@@ -25,7 +26,10 @@ export default function FavoritesPage() {
 
   if (!user) return (
     <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #F0E6DC', padding: '32px', textAlign: 'center' }}>
-      <p style={{ color: '#9A7060', fontSize: '14px' }}>ログインすると好き！一覧を見られます</p>
+      <p style={{ color: '#9A7060', fontSize: '14px', marginBottom: '16px' }}>好き！一覧を見るにはログインが必要です</p>
+      <button onClick={signInWithGoogle} style={{ backgroundColor: '#C07048', color: '#fff', border: 'none', borderRadius: '20px', padding: '10px 24px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
+        Googleでログイン
+      </button>
     </div>
   )
 
