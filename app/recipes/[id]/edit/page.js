@@ -23,7 +23,13 @@ export default function EditRecipe({ params }) {
           description: data.description || '',
           category: data.category || '',
           cookTime: data.cookTime || '',
-          ingredients: (data.ingredients || []).join('\n'),
+          ingredients: (data.ingredients || []).length > 0
+            ? (data.ingredients || []).map(ing =>
+                typeof ing === 'string'
+                  ? { name: ing, amount: '' }
+                  : { name: ing.name || '', amount: ing.amount || '' }
+              )
+            : [{ name: '', amount: '' }],
           steps: (data.steps || []).join('\n'),
           imageUrl: data.imageUrl || '',
           authorId: data.authorId || null,
@@ -35,21 +41,36 @@ export default function EditRecipe({ params }) {
     fetchRecipe()
   }, [params.id])
 
-  const handleChange = (e) => {
+ const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  const handleIngredientChange = (index, field, value) => {
+    const updated = form.ingredients.map((ing, i) =>
+      i === index ? { ...ing, [field]: value } : ing
+    )
+    setForm({ ...form, ingredients: updated })
+  }
+
+  const addIngredient = () => {
+    setForm({ ...form, ingredients: [...form.ingredients, { name: '', amount: '' }] })
+  }
+
+  const removeIngredient = (index) => {
+    if (form.ingredients.length === 1) return
+    setForm({ ...form, ingredients: form.ingredients.filter((_, i) => i !== index) })
+  }
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
     setSubmitting(true)
     try {
-      await updateDoc(doc(db, 'recipes', params.id), {
+     await updateDoc(doc(db, 'recipes', params.id), {
         title: form.title,
         description: form.description,
         category: form.category,
         cookTime: Number(form.cookTime) || 0,
-        ingredients: form.ingredients.split('\n').filter(l => l.trim()),
+        ingredients: form.ingredients.filter(ing => ing.name.trim()),
         steps: form.steps.split('\n').filter(l => l.trim()),
         imageUrl: form.imageUrl,
       })
@@ -118,14 +139,34 @@ export default function EditRecipe({ params }) {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">材料（1行に1つ）</label>
-          <textarea
-            name="ingredients"
-            value={form.ingredients}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-          />
+          <label className="block text-sm font-bold text-gray-700 mb-1">材料</label>
+          {form.ingredients.map((ing, index) => (
+            <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+              <input
+                value={ing.name}
+                onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm"
+                style={{ flex: 2 }}
+                placeholder="例：じゃがいも"
+              />
+              <input
+                value={ing.amount}
+                onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm"
+                style={{ flex: 1 }}
+                placeholder="例：3個"
+              />
+              <button type="button" onClick={() => removeIngredient(index)}
+                style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #e5e7eb', backgroundColor: '#fff', color: '#9ca3af', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                ×
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addIngredient}
+            className="mt-1 text-sm"
+            style={{ color: '#C07048', backgroundColor: '#FFF0E6', border: '1px solid #F0E6DC', borderRadius: '20px', padding: '6px 16px', cursor: 'pointer' }}>
+            ＋ 材料を追加
+          </button>
         </div>
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-1">手順（1行に1ステップ）</label>
