@@ -1,6 +1,7 @@
 import './globals.css'
 import { AuthProvider } from '../components/AuthProvider'
-import Header from '../components/Header'
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
 
 export const metadata = {
   title: 'もぐレピ - レシピ一覧',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
           <Header />
           <main style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px' }}>
             {children}
+          <BottomNav />
           </main>
         </AuthProvider>
       </body>
