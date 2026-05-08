@@ -1,7 +1,7 @@
 import './globals.css'
 import { AuthProvider } from '../components/AuthProvider'
-import Header from '@/components/Header';
-import BottomNav from '@/components/BottomNav';
+import Header from '../components/Header';
+import BottomNav from '../components/BottomNav';
 
 export const metadata = {
   title: 'もぐレピ - レシピ一覧',
