@@ -41,8 +41,8 @@ export default function Header() {
                     <a href="/favorites" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '13px', color: '#5C3D2E', textDecoration: 'none', borderBottom: '1px solid #F0E6DC' }}>
                       ❤ 好き！
                     </a>
-                    <a href={user ? '/recipes/new' : '#'} onClick={!user ? (e) => { e.preventDefault(); handleLogin(); setMenuOpen(false) } : undefined} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '13px', color: user ? '#5C3D2E' : '#A89880', textDecoration: 'none', borderBottom: '1px solid #F0E6DC' }}>
-                      ＋ レシピを追加{!user && '（ログインが必要です）'}
+                    <a href="/recipes/new" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '13px', color: '#5C3D2E', textDecoration: 'none', borderBottom: '1px solid #F0E6DC' }}>
+                      ＋ レシピを追加
                     </a>
                     {user ? (
                       <button
