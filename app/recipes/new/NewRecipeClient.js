@@ -88,7 +88,6 @@ export default function NewRecipeClient() {
   }
 
   const handleSubmit = async (e) => {
-  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
     setSubmitting(true)
