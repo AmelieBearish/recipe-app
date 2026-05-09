@@ -74,27 +74,26 @@ export default function Home() {
               )}
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
-              <span className="text-xs font-bold text-amber-600 mb-1">こんなの好き？</span>
+              <span className="text-xs font-bold text-amber-600 mb-1">✨ こんなの好き？</span>
               <p className="font-bold text-gray-800 text-base leading-snug line-clamp-1">{featuredRecipe.title}</p>
               {featuredRecipe.description && (
                 <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{featuredRecipe.description}</p>
               )}
-              {Array.isArray(featuredRecipe.ingredients) && featuredRecipe.ingredients.length > 0 && (
-                <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
-                  {featuredRecipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name).join('・')}
+              <div className="flex items-center justify-between mt-0.5 gap-2">
+                <p className="text-xs text-gray-400 line-clamp-1 flex-1 min-w-0">
+                  {Array.isArray(featuredRecipe.ingredients) && featuredRecipe.ingredients.length > 0
+                    ? featuredRecipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name).join('・')
+                    : ''}
                 </p>
-              )}
+                <button
+                  onClick={(e) => { e.stopPropagation(); pickRandom() }}
+                  className="text-xs text-amber-600 border border-amber-300 rounded-full px-3 py-1 bg-white hover:bg-amber-50 transition flex-shrink-0"
+                >
+                  🔀 別のレシピ！
+                </button>
+              </div>
             </div>
           </div>
-          <div className="px-4 pb-3 pt-1 flex justify-end">
-            <button
-              onClick={pickRandom}
-              className="text-xs text-amber-600 border border-amber-300 rounded-full px-3 py-1 bg-white hover:bg-amber-50 transition"
-            >
-              🔀 ランダム表示
-            </button>
-          </div>
-        </div>
       )}
       {loading && <p className="text-gray-400 text-sm">読み込み中...</p>}
       {!loading && filteredRecipes.length === 0 && (
