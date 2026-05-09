@@ -80,7 +80,7 @@ export default function Home() {
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-bold text-amber-600">✨ こんなの好き？</span>
                 {selectedCategory === '' && featuredRecipe.category && (
-                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-600 text-white">
                     {featuredRecipe.category}
                   </span>
                 )}
