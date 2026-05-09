@@ -73,7 +73,7 @@ export default function Home() {
               {featuredRecipe.imageUrl ? (
                 <Image src={featuredRecipe.imageUrl} alt={featuredRecipe.title} fill className="object-cover" />
               ) : (
-               <Image src={selectedCategory ? `/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[selectedCategory] || 'main'}.png` : '/images/categories/main.png'} alt={selectedCategory || '主菜'} fill className="object-cover" />
+               <Image src={`/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[featuredRecipe.category] || 'main'}.png`} alt={featuredRecipe.category || '主菜'} fill className="object-cover" />
               )}
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
