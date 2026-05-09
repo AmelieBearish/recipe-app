@@ -108,9 +108,9 @@ export default function Home() {
         onCategoryChange={setSelectedCategory}
       />
       {user && pantryItems.length > 0 && (
-        <div style={{ marginBottom: '20px', padding: '14px', backgroundColor: '#FFFAF7', border: '1px solid #F0E6DC', borderRadius: '16px' }}>
-          <p style={{ fontSize: '13px', fontWeight: '600', color: '#3D2314', marginBottom: '10px' }}>🧊 冷蔵庫から探す</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+        <div style={{ marginBottom: '20px', padding: '10px 12px', backgroundColor: '#FFFAF7', border: '1px solid #F0E6DC', borderRadius: '16px' }}>
+          <p style={{ fontSize: '12px', fontWeight: '600', color: '#3D2314', marginBottom: '8px' }}>🧊 もぐポケから探す</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
             {pantryItems.map(item => (
               <button
                 key={item.name}
@@ -136,11 +136,11 @@ export default function Home() {
               onClick={() => setPantrySearchMode(true)}
               disabled={selectedIngredients.length === 0}
               style={{
-                padding: '8px 20px',
+                padding: '5px 14px',
                 borderRadius: '20px',
                 backgroundColor: selectedIngredients.length > 0 ? '#C07048' : '#E8D5C8',
                 color: '#fff',
-                fontSize: '13px',
+                fontSize: '12px',
                 fontWeight: '600',
                 border: 'none',
                 cursor: selectedIngredients.length > 0 ? 'pointer' : 'default',
@@ -152,11 +152,11 @@ export default function Home() {
               <button
                 onClick={() => { setPantrySearchMode(false); setSelectedIngredients([]) }}
                 style={{
-                  padding: '8px 16px',
+                  padding: '5px 12px',
                   borderRadius: '20px',
                   backgroundColor: '#fff',
                   color: '#9A7060',
-                  fontSize: '13px',
+                  fontSize: '12px',
                   border: '1px solid #F0E6DC',
                   cursor: 'pointer',
                 }}
