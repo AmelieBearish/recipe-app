@@ -78,12 +78,19 @@ export default function Home() {
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-amber-600">✨ こんなの好き？</span>
-                {selectedCategory === '' && featuredRecipe.category && (
-                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-400 text-white">
-                    {featuredRecipe.category}
-                  </span>
-                )}
+                <span className="text-xs font-bold text-amber-600">
+                  {selectedCategory === '' ? (
+                    {
+                      '主菜': '今日のごはん、こんなのどう？',
+                      '副菜': 'あと一品とか、こんなのどう？',
+                      '汁物': 'お口のうるおい、こんなのどう？',
+                      '丼': 'どんぶりもの、こんなのどう？',
+                      '麺': 'ちゅるっと一品、こんなのどう？',
+                      'おやつ・デザート': '甘いもの、こんなのどう？',
+                      'その他': '仕込んでおくの、こんなのどう？',
+                    }[featuredRecipe.category] ?? '✨ こんなの好き？'
+                  ) : '✨ こんなの好き？'}
+                </span>
               </div>
               <p className="font-bold text-gray-800 text-base leading-snug line-clamp-1">{featuredRecipe.title}</p>
               {featuredRecipe.description && (
