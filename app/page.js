@@ -105,7 +105,7 @@ export default function Home() {
         {filteredRecipes.map(recipe => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
-      </div>
-    </div>
-  )
-}
+            </div>
+          </div>
+        </div>
+      )}
