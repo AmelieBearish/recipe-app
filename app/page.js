@@ -17,18 +17,21 @@ export default function Home() {
   const [featuredRecipe, setFeaturedRecipe] = useState(null)
   const router = useRouter()
 
-  const mainRecipes = useMemo(() => recipes.filter(r => r.category === '主菜'), [recipes])
+  const targetRecipes = useMemo(() => {
+    if (selectedCategory === '') return recipes
+    return recipes.filter(r => r.category === selectedCategory)
+  }, [recipes, selectedCategory])
 
   const pickRandom = useCallback(() => {
-    if (mainRecipes.length === 0) return
-    const idx = Math.floor(Math.random() * mainRecipes.length)
-    setFeaturedRecipe(mainRecipes[idx])
-  }, [mainRecipes])
+    if (targetRecipes.length === 0) return
+    const idx = Math.floor(Math.random() * targetRecipes.length)
+    setFeaturedRecipe(targetRecipes[idx])
+  }, [targetRecipes])
 
   useEffect(() => {
-    if (!loading && featuredRecipe === null) pickRandom()
-  }, [loading, featuredRecipe, pickRandom])
-
+    if (!loading) pickRandom()
+  }, [loading, selectedCategory])
+  
   useEffect(() => {
     document.title = 'もぐレピ - レシピ一覧'
     const q = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'))
@@ -70,7 +73,7 @@ export default function Home() {
               {featuredRecipe.imageUrl ? (
                 <Image src={featuredRecipe.imageUrl} alt={featuredRecipe.title} fill className="object-cover" />
               ) : (
-                <Image src="/images/categories/main.png" alt="主菜" fill className="object-cover" />
+               <Image src={selectedCategory ? `/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[selectedCategory] || 'main'}.png` : '/images/categories/main.png'} alt={selectedCategory || '主菜'} fill className="object-cover" />
               )}
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
