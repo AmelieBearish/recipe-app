@@ -82,12 +82,12 @@ export default function NewRecipeClient() {
     setForm({ ...form, ingredients: [...form.ingredients, { name: '', amount: '' }] })
   }
 
-  const removeIngredient = (index) => {
+ const removeIngredient = (index) => {
     if (form.ingredients.length === 1) return
     setForm({ ...form, ingredients: form.ingredients.filter((_, i) => i !== index) })
   }
-  }
 
+  const handleSubmit = async (e) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
