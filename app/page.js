@@ -18,7 +18,7 @@ export default function Home() {
   const router = useRouter()
 
   const mainRecipes = useMemo(() => recipes.filter(r => r.category === '主菜'), [recipes])
-  
+
   const pickRandom = useCallback(() => {
     if (mainRecipes.length === 0) return
     const idx = Math.floor(Math.random() * mainRecipes.length)
@@ -57,7 +57,7 @@ export default function Home() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-800">レシピ一覧</h1>
       </div>
-     <SearchFilter
+      <SearchFilter
         searchText={searchText}
         onSearchChange={setSearchText}
         selectedCategory={selectedCategory}
@@ -94,6 +94,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
       )}
       {loading && <p className="text-gray-400 text-sm">読み込み中...</p>}
       {!loading && filteredRecipes.length === 0 && (
@@ -105,7 +106,7 @@ export default function Home() {
         {filteredRecipes.map(recipe => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
+    </div>
+  )
+}
