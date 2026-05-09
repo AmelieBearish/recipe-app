@@ -101,8 +101,14 @@ export default function RecipeDetail({ params }) {
         <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#5C3D2E', marginBottom: '10px' }}>材料</h2>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {recipe.ingredients?.map((item, i) => (
-            <li key={i} style={{ fontSize: '14px', color: '#5C3D2E', padding: '6px 0', borderBottom: '1px solid #F5EDE6', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ color: '#E8A87C', fontWeight: '600' }}>・</span>{item}
+            <li key={i} style={{ fontSize: '14px', color: '#5C3D2E', padding: '6px 0', borderBottom: '1px solid #F5EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#E8A87C', fontWeight: '600' }}>・</span>
+                {typeof item === 'string' ? item : item.name}
+              </span>
+              {typeof item !== 'string' && item.amount && (
+                <span style={{ color: '#9A7060', flexShrink: 0 }}>{item.amount}</span>
+              )}
             </li>
           ))}
         </ul>
