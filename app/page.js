@@ -167,12 +167,7 @@ export default function Home() {
           </div>
           {pantrySearchMode && selectedIngredients.length > 0 && (
             <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
-              {filteredRecipes.length}件のレシピが見つかりました（ヒット数順）
-            </p>
-          )}
-          {pantrySearchMode && selectedIngredients.length > 0 && (
-            <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
-              {filteredRecipes.length}件のレシピが見つかりました（ヒット数順）
+              {filteredRecipes.length}件のレシピが見つかりました
             </p>
           )}
         </div>
