@@ -77,7 +77,12 @@ export default function Home() {
               )}
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
-              <span className="text-xs font-bold text-amber-600 mb-1">✨ こんなの好き？</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-amber-600">✨ こんなの好き？</span>
+                {featuredRecipe.category && (
+                  <span className="text-xs text-gray-400">{featuredRecipe.category}</span>
+                )}
+              </div>
               <p className="font-bold text-gray-800 text-base leading-snug line-clamp-1">{featuredRecipe.title}</p>
               {featuredRecipe.description && (
                 <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{featuredRecipe.description}</p>
