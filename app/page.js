@@ -131,49 +131,45 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              {pantrySearchMode && selectedIngredients.length > 0 && (
-                <p style={{ fontSize: '12px', color: '#9A7060', margin: 0 }}>
-                  {filteredRecipes.length}件ヒット（ヒット数順）
-                </p>
-              )}
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {pantrySearchMode && (
-                <button
-                  onClick={() => { setPantrySearchMode(false); setSelectedIngredients([]) }}
-                  style={{
-                    padding: '5px 12px',
-                    borderRadius: '20px',
-                    backgroundColor: '#fff',
-                    color: '#9A7060',
-                    fontSize: '12px',
-                    border: '1px solid #F0E6DC',
-                    cursor: 'pointer',
-                  }}
-                >
-                  クリア
-                </button>
-              )}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setPantrySearchMode(true)}
+              disabled={selectedIngredients.length === 0}
+              style={{
+                padding: '5px 14px',
+                borderRadius: '20px',
+                backgroundColor: selectedIngredients.length > 0 ? '#C07048' : '#E8D5C8',
+                color: '#fff',
+                fontSize: '12px',
+                fontWeight: '600',
+                border: 'none',
+                cursor: selectedIngredients.length > 0 ? 'pointer' : 'default',
+              }}
+            >
+              🔍 これで探す
+            </button>
+            {pantrySearchMode && (
               <button
-                onClick={() => setPantrySearchMode(true)}
-                disabled={selectedIngredients.length === 0}
+                onClick={() => { setPantrySearchMode(false); setSelectedIngredients([]) }}
                 style={{
-                  padding: '5px 14px',
+                  padding: '5px 12px',
                   borderRadius: '20px',
-                  backgroundColor: selectedIngredients.length > 0 ? '#C07048' : '#E8D5C8',
-                  color: '#fff',
+                  backgroundColor: '#fff',
+                  color: '#9A7060',
                   fontSize: '12px',
-                  fontWeight: '600',
-                  border: 'none',
-                  cursor: selectedIngredients.length > 0 ? 'pointer' : 'default',
+                  border: '1px solid #F0E6DC',
+                  cursor: 'pointer',
                 }}
               >
-                🔍 これで探す
+                クリア
               </button>
-            </div>
+            )}
           </div>
+          {pantrySearchMode && selectedIngredients.length > 0 && (
+            <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
+              {filteredRecipes.length}件のレシピが見つかりました（ヒット数順）
+            </p>
+          )}
           {pantrySearchMode && selectedIngredients.length > 0 && (
             <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
               {filteredRecipes.length}件のレシピが見つかりました（ヒット数順）
