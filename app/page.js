@@ -76,40 +76,34 @@ export default function Home() {
                <Image src={`/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[featuredRecipe.category] || 'main'}.png`} alt={featuredRecipe.category || '主菜'} fill className="object-cover" />
               )}
             </div>
-            <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-amber-600">
-                  {selectedCategory === '' ? (
-                    {
-                      '主菜': '今日のごはん、こんなのどう？',
-                      '副菜': 'あと一品とか、こんなのどう？',
-                      '汁物': 'お口のうるおい、こんなのどう？',
-                      '丼': 'どんぶりもの、こんなのどう？',
-                      '麺': 'ちゅるっと一品、こんなのどう？',
-                      'おやつ・デザート': '甘いもの、こんなのどう？',
-                      'その他': '仕込んでおくの、こんなのどう？',
-                    }[featuredRecipe.category] ?? '✨ こんなの好き？'
-                  ) : '✨ こんなの好き？'}
-                </span>
-              </div>
-              <p className="font-bold text-gray-800 text-base leading-snug line-clamp-1">{featuredRecipe.title}</p>
-              {featuredRecipe.description && (
-                <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{featuredRecipe.description}</p>
-              )}
-              <div className="flex items-center justify-between mt-0.5 gap-2">
-                <p className="text-xs text-gray-400 line-clamp-1 flex-1 min-w-0">
+            <div className="flex flex-col justify-between px-4 py-3 flex-1 min-w-0">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-amber-600">
+                    {selectedCategory === '' ? (
+                      {
+                        '主菜': '今日のごはん、こんなのどう？',
+                        '副菜': 'あと一品とか、こんなのどう？',
+                        '汁物': 'お口のうるおい、こんなのどう？',
+                        '丼': 'どんぶりもの、こんなのどう？',
+                        '麺': 'ちゅるっと一品、こんなのどう？',
+                        'おやつ・デザート': '甘いもの、こんなのどう？',
+                        'その他': '仕込んでおくの、こんなのどう？',
+                      }[featuredRecipe.category] ?? '✨ こんなの好き？'
+                    ) : '✨ こんなの好き？'}
+                  </span>
+                </div>
+                <p className="font-bold text-gray-800 text-base leading-snug line-clamp-1">{featuredRecipe.title}</p>
+                {featuredRecipe.description && (
+                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{featuredRecipe.description}</p>
+                )}
+                <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
                   {Array.isArray(featuredRecipe.ingredients) && featuredRecipe.ingredients.length > 0
                     ? featuredRecipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name).join('・')
                     : ''}
                 </p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); pickRandom() }}
-                  className="text-xs text-amber-600 border border-amber-300 rounded-full px-3 py-1 bg-white hover:bg-amber-50 transition flex-shrink-0"
-                >
-                  🔀 別のレシピ！
-                </button>
               </div>
-            </div>
+              <div className="flex justify-end">
           </div>
         </div>
       )}
