@@ -17,8 +17,8 @@ export default function Home() {
   const [featuredRecipe, setFeaturedRecipe] = useState(null)
   const router = useRouter()
 
-  const mainRecipes = useMemo(() => recipes.filter(r => r.category === 'main'), [recipes])
-
+  const mainRecipes = useMemo(() => recipes.filter(r => r.category === '主菜'), [recipes])
+  
   const pickRandom = useCallback(() => {
     if (mainRecipes.length === 0) return
     const idx = Math.floor(Math.random() * mainRecipes.length)
@@ -70,7 +70,7 @@ export default function Home() {
               {featuredRecipe.imageUrl ? (
                 <Image src={featuredRecipe.imageUrl} alt={featuredRecipe.title} fill className="object-cover" />
               ) : (
-                <Image src={`/images/categories/main.png`} alt="主菜" fill className="object-cover" />
+               <Image src="/images/categories/main.png" alt="主菜" fill className="object-cover" />
               )}
             </div>
             <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
