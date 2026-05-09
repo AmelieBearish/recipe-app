@@ -31,7 +31,7 @@ export default function Home() {
   useEffect(() => {
     if (!loading) pickRandom()
   }, [loading, selectedCategory])
-  
+
   useEffect(() => {
     document.title = 'もぐレピ - レシピ一覧'
     const q = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'))
@@ -73,7 +73,7 @@ export default function Home() {
               {featuredRecipe.imageUrl ? (
                 <Image src={featuredRecipe.imageUrl} alt={featuredRecipe.title} fill className="object-cover" />
               ) : (
-               <Image src={`/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[featuredRecipe.category] || 'main'}.png`} alt={featuredRecipe.category || '主菜'} fill className="object-cover" />
+                <Image src={`/images/categories/${{'主菜':'main','副菜':'side','汁物':'soup','丼':'donburi','麺':'noodle','おやつ・デザート':'snack','その他':'other'}[featuredRecipe.category] || 'main'}.png`} alt={featuredRecipe.category || '主菜'} fill className="object-cover" />
               )}
             </div>
             <div className="flex flex-col justify-between px-4 py-3 flex-1 min-w-0">
@@ -104,6 +104,14 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex justify-end">
+                <button
+                  onClick={(e) => { e.stopPropagation(); pickRandom() }}
+                  className="text-xs text-amber-600 border border-amber-300 rounded-full px-3 py-1 bg-white hover:bg-amber-50 transition flex-shrink-0"
+                >
+                  🔀 別のレシピ！
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
