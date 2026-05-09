@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, onSnapshot, orderBy, query, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../components/AuthProvider'
 import RecipeCard from '../components/RecipeCard'
@@ -15,7 +15,32 @@ export default function Home() {
   const [searchText, setSearchText] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [featuredRecipe, setFeaturedRecipe] = useState(null)
+  const [pantryItems, setPantryItems] = useState([])
+  const [selectedIngredients, setSelectedIngredients] = useState([])
+  const [pantrySearchMode, setPantrySearchMode] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    if (!user) {
+      setPantryItems([])
+      return
+    }
+    const fetchPantry = async () => {
+      const snapshot = await getDocs(collection(db, `users/${user.uid}/pantry`))
+      const items = snapshot.docs
+        .map(doc => doc.data())
+        .filter(item => item.status === '在庫あり' || item.status === '残り少ない')
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'))
+      setPantryItems(items)
+    }
+    fetchPantry()
+  }, [user])
+
+  const toggleIngredient = (name) => {
+    setSelectedIngredients(prev =>
+      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+    )
+  }
 
   const targetRecipes = useMemo(() => {
     if (selectedCategory === '') return recipes
@@ -44,28 +69,109 @@ export default function Home() {
 
   const filteredRecipes = useMemo(() => {
     const keywords = searchText.trim().split(/\s+/).filter(Boolean)
-    return recipes.filter(recipe => {
+    let result = recipes.filter(recipe => {
       const categoryMatch = selectedCategory === '' || recipe.category === selectedCategory
-      const ingredientsText = Array.isArray(recipe.ingredients) ? recipe.ingredients.join(' ') : ''
+      const ingredientsText = Array.isArray(recipe.ingredients)
+        ? recipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name).join(' ')
+        : ''
       const searchTarget = [recipe.title, recipe.description, ingredientsText].filter(Boolean).join(' ')
       const keywordsMatch = keywords.every(kw =>
         searchTarget.toLowerCase().includes(kw.toLowerCase())
       )
       return categoryMatch && keywordsMatch
     })
-  }, [recipes, searchText, selectedCategory])
+
+    if (pantrySearchMode && selectedIngredients.length > 0) {
+      result = result
+        .map(recipe => {
+          const recipeIngredientNames = Array.isArray(recipe.ingredients)
+            ? recipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name)
+            : []
+          const hitCount = selectedIngredients.filter(sel =>
+            recipeIngredientNames.some(name => name.includes(sel) || sel.includes(name))
+          ).length
+          return { ...recipe, hitCount }
+        })
+        .filter(recipe => recipe.hitCount > 0)
+        .sort((a, b) => b.hitCount - a.hitCount)
+    }
+
+    return result
+  }, [recipes, searchText, selectedCategory, pantrySearchMode, selectedIngredients])
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold text-gray-800">レシピ一覧</h1>
-      </div>
       <SearchFilter
         searchText={searchText}
         onSearchChange={setSearchText}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
       />
+      {user && pantryItems.length > 0 && (
+        <div style={{ marginBottom: '20px', padding: '14px', backgroundColor: '#FFFAF7', border: '1px solid #F0E6DC', borderRadius: '16px' }}>
+          <p style={{ fontSize: '13px', fontWeight: '600', color: '#3D2314', marginBottom: '10px' }}>🧊 冷蔵庫から探す</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+            {pantryItems.map(item => (
+              <button
+                key={item.name}
+                onClick={() => toggleIngredient(item.name)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '20px',
+                  border: '1px solid',
+                  borderColor: selectedIngredients.includes(item.name) ? '#C07048' : '#F0E6DC',
+                  backgroundColor: selectedIngredients.includes(item.name) ? '#C07048' : '#fff',
+                  color: selectedIngredients.includes(item.name) ? '#fff' : '#9A7060',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  fontWeight: selectedIngredients.includes(item.name) ? '600' : '400',
+                }}
+              >
+                {item.status === '残り少ない' ? `⚠️ ${item.name}` : item.name}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setPantrySearchMode(true)}
+              disabled={selectedIngredients.length === 0}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '20px',
+                backgroundColor: selectedIngredients.length > 0 ? '#C07048' : '#E8D5C8',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: '600',
+                border: 'none',
+                cursor: selectedIngredients.length > 0 ? 'pointer' : 'default',
+              }}
+            >
+              🔍 これで探す
+            </button>
+            {pantrySearchMode && (
+              <button
+                onClick={() => { setPantrySearchMode(false); setSelectedIngredients([]) }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  backgroundColor: '#fff',
+                  color: '#9A7060',
+                  fontSize: '13px',
+                  border: '1px solid #F0E6DC',
+                  cursor: 'pointer',
+                }}
+              >
+                クリア
+              </button>
+            )}
+          </div>
+          {pantrySearchMode && selectedIngredients.length > 0 && (
+            <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
+              {filteredRecipes.length}件のレシピが見つかりました（ヒット数順）
+            </p>
+          )}
+        </div>
+      )}
       {!loading && featuredRecipe && (
         <div className="mb-5 rounded-2xl overflow-hidden border border-amber-200 bg-amber-50 shadow-sm">
           <div className="flex items-stretch cursor-pointer" onClick={() => router.push(`/recipes/${featuredRecipe.id}`)}>
