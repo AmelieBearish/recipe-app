@@ -97,8 +97,33 @@ export default function Home() {
         .sort((a, b) => b.hitCount - a.hitCount)
     }
 
+    if (allPantrySearchMode && pantryItems.length > 0) {
+      const pantryNames = pantryItems.map(item => item.name)
+      result = result
+        .map(recipe => {
+          const recipeIngredientNames = Array.isArray(recipe.ingredients)
+            ? recipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name)
+            : []
+          const totalCount = recipeIngredientNames.length
+          const hitCount = recipeIngredientNames.filter(name =>
+            pantryNames.some(p => name.includes(p) || p.includes(name))
+          ).length
+          const missingCount = totalCount - hitCount
+          let pantryBadge = null
+          if (missingCount === 0) pantryBadge = 'all'
+          else if (missingCount === 1) pantryBadge = 'one'
+          else if (missingCount === 2) pantryBadge = 'two'
+          return { ...recipe, hitCount, totalCount, missingCount, pantryBadge }
+        })
+        .filter(recipe => recipe.hitCount > 0)
+        .sort((a, b) => {
+          if (a.missingCount !== b.missingCount) return a.missingCount - b.missingCount
+          return b.hitCount - a.hitCount
+        })
+    }
+
     return result
-  }, [recipes, searchText, selectedCategory, pantrySearchMode, selectedIngredients])
+  }, [recipes, searchText, selectedCategory, pantrySearchMode, selectedIngredients, allPantrySearchMode, pantryItems])
 
   return (
     <div>
@@ -132,7 +157,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setPantrySearchMode(true)}
               disabled={selectedIngredients.length === 0}
@@ -149,9 +174,24 @@ export default function Home() {
             >
               🔍 これで探す
             </button>
-            {pantrySearchMode && (
+            <button
+              onClick={() => setAllPantrySearchMode(true)}
+              style={{
+                padding: '5px 14px',
+                borderRadius: '20px',
+                backgroundColor: '#4A8A2A',
+                color: '#fff',
+                fontSize: '12px',
+                fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              ✨ 全部使って探す
+            </button>
+            {(pantrySearchMode || allPantrySearchMode) && (
               <button
-                onClick={() => { setPantrySearchMode(false); setSelectedIngredients([]) }}
+                onClick={() => { setPantrySearchMode(false); setAllPantrySearchMode(false); setSelectedIngredients([]) }}
                 style={{
                   padding: '5px 12px',
                   borderRadius: '20px',
@@ -166,7 +206,7 @@ export default function Home() {
               </button>
             )}
           </div>
-          {pantrySearchMode && selectedIngredients.length > 0 && (
+          {(pantrySearchMode && selectedIngredients.length > 0 || allPantrySearchMode) && (
             <p style={{ fontSize: '12px', color: '#9A7060', marginTop: '8px' }}>
               {filteredRecipes.length}件のレシピが見つかりました
             </p>
@@ -230,7 +270,7 @@ export default function Home() {
       )}
       <div className="grid gap-4">
         {filteredRecipes.map(recipe => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+          <RecipeCard key={recipe.id} recipe={recipe} badge={allPantrySearchMode ? recipe.pantryBadge : null} />
         ))}
       </div>
     </div>
