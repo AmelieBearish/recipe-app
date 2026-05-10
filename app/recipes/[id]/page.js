@@ -281,7 +281,7 @@ export default function RecipeDetail({ params }) {
       {showToast && (
         <div style={{ position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#3D2314', color: '#fff', borderRadius: '12px', padding: '12px 20px', fontSize: '14px', zIndex: 100, display: 'flex', alignItems: 'center', gap: '12px', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
           <span>🛒 買い物リストに追加しました</span>
-          <a href="https://pantry-app-lake-three.vercel.app" target="_blank" rel="noopener noreferrer"
+          <a href="https://pantry-app-lake-three.vercel.app?page=shopping" target="_blank" rel="noopener noreferrer"
             style={{ color: '#E8A87C', fontWeight: '600', textDecoration: 'none', fontSize: '13px' }}>
             もぐポケを開く →
           </a>
