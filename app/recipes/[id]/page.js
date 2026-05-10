@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { doc, getDoc, updateDoc, increment, deleteDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, increment, deleteDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../../lib/firebase'
 import CommentSection from '../../../components/CommentSection'
 import { useAuth } from '../../../components/AuthProvider'
@@ -14,6 +14,10 @@ export default function RecipeDetail({ params }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [arranges, setArranges] = useState([])
+  const [showShoppingModal, setShowShoppingModal] = useState(false)
+  const [pantryItems, setPantryItems] = useState([])
+  const [addingToShopping, setAddingToShopping] = useState(false)
+  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -41,6 +45,15 @@ export default function RecipeDetail({ params }) {
     checkLiked(user.uid, params.id).then(result => setLiked(result))
   }, [user, params.id])
 
+  useEffect(() => {
+    if (!user) return
+    const fetchPantry = async () => {
+      const snap = await getDocs(collection(db, 'users', user.uid, 'pantry'))
+      setPantryItems(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+    }
+    fetchPantry()
+  }, [user])
+
   const handleLike = async () => {
     if (!user) return
     if (liked) {
@@ -65,6 +78,40 @@ export default function RecipeDetail({ params }) {
       alert('削除に失敗しました')
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const getPantryStatus = (ingredientName) => {
+    const found = pantryItems.find(p => p.name.includes(ingredientName) || ingredientName.includes(p.name))
+    return found ? found.status : null
+  }
+
+  const handleAddToShopping = async () => {
+    if (!user || !recipe) return
+    setAddingToShopping(true)
+    try {
+      const ingredients = recipe.ingredients || []
+      for (const item of ingredients) {
+        const name = typeof item === 'string' ? item : item.name
+        const amount = typeof item === 'string' ? '' : (item.amount || '')
+        await addDoc(collection(db, 'users', user.uid, 'shoppingList'), {
+          name,
+          amount,
+          recipeId: params.id,
+          recipeName: recipe.title,
+          registerToPantry: true,
+          category: '',
+          checked: false,
+          addedAt: serverTimestamp(),
+        })
+      }
+      setShowShoppingModal(false)
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 4000)
+    } catch (err) {
+      alert('追加に失敗しました')
+    } finally {
+      setAddingToShopping(false)
     }
   }
 
@@ -141,6 +188,12 @@ export default function RecipeDetail({ params }) {
           style={{ display: 'inline-block', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '14px', fontWeight: '500', textDecoration: 'none', border: '1px solid #F0E6DC' }}>
           アレンジする
         </a>
+        {user && (
+          <button onClick={() => setShowShoppingModal(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '20px', backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '14px', fontWeight: '500', border: '1px solid #F0E6DC', cursor: 'pointer' }}>
+            🛒 買い物リストに追加
+          </button>
+        )}
       </div>
 
      {arranges.length > 0 && (
@@ -183,6 +236,57 @@ export default function RecipeDetail({ params }) {
           ← 一覧に戻る
         </a>
       </div>
+
+      {showShoppingModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '16px' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '360px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontWeight: '600', color: '#3D2314', marginBottom: '4px', fontSize: '16px' }}>🛒 買い物リストに追加</h3>
+            <p style={{ fontSize: '13px', color: '#9A7060', marginBottom: '16px' }}>「{recipe.title}」の材料（{recipe.ingredients?.length || 0}件）</p>
+            <ul style={{ listStyle: 'none', padding: 0, overflowY: 'auto', flex: 1, marginBottom: '16px' }}>
+              {recipe.ingredients?.map((item, i) => {
+                const name = typeof item === 'string' ? item : item.name
+                const amount = typeof item === 'string' ? '' : (item.amount || '')
+                const status = getPantryStatus(name)
+                return (
+                  <li key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F5EDE6', fontSize: '14px' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {status === '在庫あり' && <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#5a9e3a', flexShrink: 0, display: 'inline-block' }} />}
+                      {status === '残り少ない' && <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#e6a817', flexShrink: 0, display: 'inline-block' }} />}
+                      {!status && <span style={{ width: '8px', height: '8px', flexShrink: 0, display: 'inline-block' }} />}
+                      <span style={{ color: '#3D2314' }}>{name}</span>
+                    </span>
+                    <span style={{ color: '#9A7060', fontSize: '13px' }}>{amount}</span>
+                  </li>
+                )
+              })}
+            </ul>
+            <div style={{ fontSize: '12px', color: '#B09080', marginBottom: '16px', display: 'flex', gap: '12px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#5a9e3a', display: 'inline-block' }} />在庫あり</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#e6a817', display: 'inline-block' }} />残り少ない</span>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setShowShoppingModal(false)}
+                style={{ flex: 1, backgroundColor: '#F5EDE6', color: '#5C3D2E', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
+                キャンセル
+              </button>
+              <button onClick={handleAddToShopping} disabled={addingToShopping}
+                style={{ flex: 1, backgroundColor: '#C07048', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
+                {addingToShopping ? '追加中...' : '追加する'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showToast && (
+        <div style={{ position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#3D2314', color: '#fff', borderRadius: '12px', padding: '12px 20px', fontSize: '14px', zIndex: 100, display: 'flex', alignItems: 'center', gap: '12px', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+          <span>🛒 買い物リストに追加しました</span>
+          <a href="https://pantry-app-lake-three.vercel.app" target="_blank" rel="noopener noreferrer"
+            style={{ color: '#E8A87C', fontWeight: '600', textDecoration: 'none', fontSize: '13px' }}>
+            もぐポケを開く →
+          </a>
+        </div>
+      )}
 
       {showDeleteModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
