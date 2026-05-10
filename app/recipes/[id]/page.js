@@ -100,7 +100,7 @@ export default function RecipeDetail({ params }) {
           recipeId: params.id,
           recipeName: recipe.title,
           registerToPantry: true,
-          category: '',
+          category: 'その他',
           checked: false,
           addedAt: serverTimestamp(),
         })
