@@ -18,6 +18,7 @@ export default function Home() {
   const [pantryItems, setPantryItems] = useState([])
   const [selectedIngredients, setSelectedIngredients] = useState([])
   const [pantrySearchMode, setPantrySearchMode] = useState(false)
+  const [allPantrySearchMode, setAllPantrySearchMode] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
