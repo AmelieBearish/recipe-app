@@ -109,11 +109,14 @@ export default function Home() {
             pantryNames.some(p => name.includes(p) || p.includes(name))
           ).length
           const missingCount = totalCount - hitCount
+          const missingIngredients = recipeIngredientNames.filter(name =>
+            !pantryNames.some(p => name.includes(p) || p.includes(name))
+          )
           let pantryBadge = null
           if (missingCount === 0) pantryBadge = 'all'
           else if (missingCount === 1) pantryBadge = 'one'
           else if (missingCount === 2) pantryBadge = 'two'
-          return { ...recipe, hitCount, totalCount, missingCount, pantryBadge }
+          return { ...recipe, hitCount, totalCount, missingCount, missingIngredients, pantryBadge }
         })
         .filter(recipe => recipe.hitCount > 0)
         .sort((a, b) => {
@@ -270,7 +273,7 @@ export default function Home() {
       )}
       <div className="grid gap-4">
         {filteredRecipes.map(recipe => (
-          <RecipeCard key={recipe.id} recipe={recipe} badge={allPantrySearchMode ? recipe.pantryBadge : null} />
+          <RecipeCard key={recipe.id} recipe={recipe} badge={allPantrySearchMode ? recipe.pantryBadge : null} missingIngredients={allPantrySearchMode ? recipe.missingIngredients : null} />
         ))}
       </div>
     </div>
