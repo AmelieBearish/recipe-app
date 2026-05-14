@@ -28,9 +28,13 @@ export default function Home() {
     }
     const fetchPantry = async () => {
       const snapshot = await getDocs(collection(db, `users/${user.uid}/pantry`))
+      const EXCLUDED_CATEGORIES = ['調味料', '冷凍食品', 'その他']
       const items = snapshot.docs
         .map(doc => doc.data())
-        .filter(item => item.status === '在庫あり' || item.status === '残り少ない')
+        .filter(item =>
+          (item.status === '在庫あり' || item.status === '残り少ない') &&
+          !EXCLUDED_CATEGORIES.includes(item.category)
+        )
         .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'))
       setPantryItems(items)
     }
