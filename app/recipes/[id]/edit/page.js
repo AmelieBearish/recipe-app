@@ -60,6 +60,31 @@ export default function EditRecipe({ params }) {
     if (form.ingredients.length === 1) return
     setForm({ ...form, ingredients: form.ingredients.filter((_, i) => i !== index) })
   }
+  const handleSaveDraft = async () => {
+    if (!form.title.trim()) {
+      alert('料理名を入力してください')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await updateDoc(doc(db, 'recipes', params.id), {
+        title: form.title,
+        description: form.description,
+        category: form.category,
+        cookTime: Number(form.cookTime) || 0,
+        ingredients: form.ingredients.filter(ing => ing.name.trim()),
+        steps: form.steps.split('\n').filter(l => l.trim()),
+        imageUrl: form.imageUrl,
+        status: 'draft',
+      })
+      window.location.href = '/drafts'
+    } catch (err) {
+      alert('下書きの保存に失敗しました')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
