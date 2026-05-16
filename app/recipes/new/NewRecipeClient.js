@@ -118,6 +118,37 @@ export default function NewRecipeClient() {
     }
   }
 
+  const handleSaveDraft = async () => {
+    if (!form.title.trim()) {
+      alert('料理名を入力してください')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await addDoc(collection(db, 'recipes'), {
+        title: form.title,
+        description: form.description,
+        category: form.category,
+        cookTime: Number(form.cookTime) || 0,
+        ingredients: form.ingredients.filter(ing => ing.name.trim()),
+        steps: form.steps.split('\n').filter(l => l.trim()),
+        imageUrl: form.imageUrl,
+        authorId: user.uid,
+        originId: form.originId || null,
+        originTitle: form.originTitle || null,
+        likes: 0,
+        commentCount: 0,
+        status: 'draft',
+        createdAt: serverTimestamp(),
+      })
+      window.location.href = '/drafts'
+    } catch (err) {
+      alert('下書きの保存に失敗しました')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
