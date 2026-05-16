@@ -105,7 +105,8 @@ export default function NewRecipeClient() {
         originTitle: form.originTitle || null,
         likes: 0,
         commentCount: 0,
-        createdAt: serverTimestamp(),
+        status: 'published',
+      createdAt: serverTimestamp(),
       })
       window.location.href = '/'
     } catch (err) {
