@@ -148,6 +148,8 @@ export default function Home() {
         onSearchChange={setSearchText}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        sortOrder={sortOrder}
+        onSortChange={setSortOrder}
       />
       {user && pantryItems.length > 0 && (
         <div style={{ marginBottom: '20px', padding: '10px 12px', backgroundColor: '#FFFAF7', border: '1px solid #F0E6DC', borderRadius: '16px' }}>
