@@ -74,7 +74,7 @@ export default function Home() {
 
   const filteredRecipes = useMemo(() => {
     const keywords = searchText.trim().split(/\s+/).filter(Boolean)
-    let result = recipes.filter(recipe => {
+    let result = recipes.filter(recipe => recipe.status !== 'draft').filter(recipe => {
       const categoryMatch = selectedCategory === '' || recipe.category === selectedCategory
       const ingredientsText = Array.isArray(recipe.ingredients)
         ? recipe.ingredients.map(ing => typeof ing === 'string' ? ing : ing.name).join(' ')
