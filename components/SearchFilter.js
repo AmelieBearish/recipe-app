@@ -61,7 +61,7 @@ export default function SearchFilter({ searchText, onSearchChange, selectedCateg
     <div style={{ display: 'flex', gap: '6px' }}>
         {[
           { value: 'createdAt', label: '新着順' },
-          { value: 'likeCount', label: '好き！順' },
+          { value: 'likes', label: '好き！順' },
           { value: 'commentCount', label: 'コメント順' },
         ].map(option => (
           <button
