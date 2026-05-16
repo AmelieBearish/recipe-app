@@ -220,7 +220,7 @@ export default function EditRecipe({ params }) {
             </div>
           )}
         </div>
-        <div className="flex gap-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button
             type="submit"
             disabled={submitting}
@@ -228,8 +228,15 @@ export default function EditRecipe({ params }) {
           >
             {submitting ? '更新中...' : '更新する'}
           </button>
-          
-            <a href={'/recipes/' + params.id}
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={submitting}
+            style={{ width: '100%', backgroundColor: '#fff', color: '#9A7060', border: '1px solid #F0E6DC', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
+          >
+            {submitting ? '保存中...' : '下書きで保存'}
+          </button>
+          <a href={'/recipes/' + params.id}
             className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-bold text-center hover:bg-gray-200"
           >
             キャンセル
