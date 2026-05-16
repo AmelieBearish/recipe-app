@@ -162,9 +162,14 @@ export default function NewRecipeClient() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '20px', fontWeight: '600', color: '#3D2314', marginBottom: '24px' }}>
-        {form.originId ? 'アレンジレシピを追加' : 'レシピを追加'}
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '20px', fontWeight: '600', color: '#3D2314', margin: 0 }}>
+          {form.originId ? 'アレンジレシピを追加' : 'レシピを追加'}
+        </h1>
+        <a href="/drafts" style={{ fontSize: '13px', color: '#9A7060', border: '1px solid #F0E6DC', borderRadius: '20px', padding: '5px 14px', textDecoration: 'none', backgroundColor: '#fff' }}>
+          下書き一覧
+        </a>
+      </div>
       {form.originId && (
         <div style={{ backgroundColor: '#FFF0E6', border: '1px solid #F0E6DC', borderRadius: '12px', padding: '10px 16px', marginBottom: '20px', fontSize: '13px', color: '#C07048' }}>
           元レシピ：{form.originTitle}
