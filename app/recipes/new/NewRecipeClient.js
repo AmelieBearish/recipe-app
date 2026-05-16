@@ -235,10 +235,16 @@ export default function NewRecipeClient() {
           <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#5C3D2E', marginBottom: '6px' }}>写真</label>
           <ImageUpload onUpload={(url) => setForm({ ...form, imageUrl: url })} />
         </div>
-        <button type="submit" disabled={submitting}
-          style={{ width: '100%', backgroundColor: '#E8A87C', color: '#fff', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
-          {submitting ? '登録中...' : 'レシピを登録する'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button type="submit" disabled={submitting}
+            style={{ width: '100%', backgroundColor: '#E8A87C', color: '#fff', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+            {submitting ? '登録中...' : 'レシピを登録する'}
+          </button>
+          <button type="button" onClick={handleSaveDraft} disabled={submitting}
+            style={{ width: '100%', backgroundColor: '#fff', color: '#9A7060', border: '1px solid #F0E6DC', borderRadius: '12px', padding: '14px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+            {submitting ? '保存中...' : '下書きで保存'}
+          </button>
+        </div>
       </form>
     </div>
   )
