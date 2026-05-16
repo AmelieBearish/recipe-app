@@ -19,6 +19,7 @@ export default function Home() {
   const [selectedIngredients, setSelectedIngredients] = useState([])
   const [pantrySearchMode, setPantrySearchMode] = useState(false)
   const [allPantrySearchMode, setAllPantrySearchMode] = useState(false)
+  const [sortOrder, setSortOrder] = useState('createdAt')
   const router = useRouter()
 
   useEffect(() => {
@@ -129,8 +130,16 @@ export default function Home() {
         })
     }
 
+ if (!pantrySearchMode && !allPantrySearchMode) {
+      const getVal = (recipe, key) => {
+        if (key === 'createdAt') return recipe.createdAt?.toMillis?.() ?? 0
+        return recipe[key] ?? 0
+      }
+      result = [...result].sort((a, b) => getVal(b, sortOrder) - getVal(a, sortOrder))
+    }
+
     return result
-  }, [recipes, searchText, selectedCategory, pantrySearchMode, selectedIngredients, allPantrySearchMode, pantryItems])
+  }, [recipes, searchText, selectedCategory, pantrySearchMode, selectedIngredients, allPantrySearchMode, pantryItems, sortOrder])
 
   return (
     <div>
