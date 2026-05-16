@@ -23,6 +23,16 @@ export default function DraftsPage() {
     }
   }
 
+  const handleDelete = async (e, recipeId) => {
+    e.preventDefault()
+    if (!window.confirm('この下書きを削除しますか？')) return
+    try {
+      await deleteDoc(doc(db, 'recipes', recipeId))
+    } catch (err) {
+      alert('削除に失敗しました')
+    }
+  }
+
   useEffect(() => {
     document.title = 'もぐレピ - 下書き一覧'
     if (!user) {
