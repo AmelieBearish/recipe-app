@@ -83,13 +83,21 @@ export default function DraftsPage() {
                   style={{ width: '90px', height: '90px', objectFit: 'cover', flexShrink: 0 }}
                 />
                 <div style={{ padding: '12px 14px', flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
-                    <span style={{ backgroundColor: '#F0F0F0', color: '#9A7060', fontSize: '11px', padding: '2px 8px', borderRadius: '20px', fontWeight: '500', flexShrink: 0 }}>
-                      下書き
-                    </span>
-                    <span style={{ backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '11px', padding: '2px 8px', borderRadius: '20px', fontWeight: '500', flexShrink: 0 }}>
-                      {recipe.category}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ backgroundColor: '#F0F0F0', color: '#9A7060', fontSize: '11px', padding: '2px 8px', borderRadius: '20px', fontWeight: '500', flexShrink: 0 }}>
+                        下書き
+                      </span>
+                      <span style={{ backgroundColor: '#FFF0E6', color: '#C07048', fontSize: '11px', padding: '2px 8px', borderRadius: '20px', fontWeight: '500', flexShrink: 0 }}>
+                        {recipe.category}
+                      </span>
+                    </div>
+                    <button
+                      onClick={(e) => handleDelete(e, recipe.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#C0A090', padding: '4px', flexShrink: 0 }}
+                    >
+                      🗑️
+                    </button>
                   </div>
                   <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#3D2314', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{recipe.title}</h2>
                   <p style={{ fontSize: '12px', color: '#9A7060', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>{recipe.description}</p>
