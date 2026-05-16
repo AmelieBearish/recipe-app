@@ -73,6 +73,7 @@ export default function EditRecipe({ params }) {
         ingredients: form.ingredients.filter(ing => ing.name.trim()),
         steps: form.steps.split('\n').filter(l => l.trim()),
         imageUrl: form.imageUrl,
+      status: 'published',
       })
       window.location.href = '/recipes/' + params.id
     } catch (err) {
