@@ -1,7 +1,7 @@
 'use client'
 import { CATEGORIES } from '../lib/categories'
 
-export default function SearchFilter({ searchText, onSearchChange, selectedCategory, onCategoryChange }) {
+export default function SearchFilter({ searchText, onSearchChange, selectedCategory, onCategoryChange, sortOrder, onSortChange }) {
   return (
     <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <input
@@ -55,6 +55,31 @@ export default function SearchFilter({ searchText, onSearchChange, selectedCateg
             }}
           >
             {cat.id}
+          </button>
+        ))}
+      </div>
+    <div style={{ display: 'flex', gap: '6px' }}>
+        {[
+          { value: 'createdAt', label: '新着順' },
+          { value: 'likeCount', label: '好き！順' },
+          { value: 'commentCount', label: 'コメント順' },
+        ].map(option => (
+          <button
+            key={option.value}
+            onClick={() => onSortChange(option.value)}
+            style={{
+              padding: '5px 12px',
+              borderRadius: '20px',
+              border: '1px solid',
+              borderColor: sortOrder === option.value ? '#C07048' : '#F0E6DC',
+              backgroundColor: sortOrder === option.value ? '#C07048' : '#FFFAF7',
+              color: sortOrder === option.value ? '#fff' : '#9A7060',
+              fontSize: '12px',
+              cursor: 'pointer',
+              fontWeight: sortOrder === option.value ? '600' : '400',
+            }}
+          >
+            {option.label}
           </button>
         ))}
       </div>
